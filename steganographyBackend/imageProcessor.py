@@ -10,23 +10,18 @@ def main(argv):
 
         imgPath = argv[1]
         encodeString = argv[2]
-        print(imgPath)
-        print(encodeString)
 
         writeToImage(imgPath, encodeString)
 
     elif len(argv)==2 and argv[0]=="decode":
         imgPath = argv[1]
-        print(imgPath)
 
         readFromImage(imgPath)
 
 
     # TODO return error message if arguments are wrong
     else:
-        return False
-
-        
+        pass
 
 
 # function to check if image is large enough to store message
@@ -81,7 +76,6 @@ def writeToImage(imgName, textToEncode):
 
     isMessageLongEnough = checkIsLongEnough(binaryMessage, imgWidth, imgHeight)
 
-
     # TODO maybe add a second type of encryption for the message contents
 
     # use checkIsLongEnough to ensure that image has enough pixels
@@ -89,11 +83,6 @@ def writeToImage(imgName, textToEncode):
 
         # determine the max number of pixels that must be modified to encode the message
         requiredPixels = len(binaryMessage) // 3 + 1
-
-        # TODO Remove this
-        print("Required Pixels: " + str(requiredPixels))
-        print("Total Pixels: " + str(len(imgPixels)))
-        print("Start Pixels: " + str(len(imgPixels) - requiredPixels))
 
         # generate random encode location
         encodeLocation = getEncodeLocation(requiredPixels, len(imgPixels))
@@ -128,7 +117,11 @@ def writeToImage(imgName, textToEncode):
         encodedImg.save(fp=newFileName, format="PNG")
 
         # TODO delete original image after new image has been uploaded
+        print(newFileName)
 
+    # TODO return error message if the conditions have not been met
+    else:
+        return False
 
 
 
@@ -148,30 +141,30 @@ def readFromImage(fileName):
     openTag, closeTag = getXmlTags()
     msgStart = binaryData.find(openTag) + len(openTag)
     msgEnd = binaryData.find(closeTag)
+
+    if msgEnd!=-1:
+
+        # decode binary into readable text
+        totalText= ""
+        for i in range((msgStart//8), (msgEnd//8)):
+            charStart = i*8
+            charEnd = (i+1)*8
+            totalText += chr(int(binaryData[charStart:charEnd], 2))
+
+
+        stemFileName = fileName.split("/")[-1]
+        stemFileName = str(stemFileName.split(".")[0])
+        newFileName = "downloads/messages/" + str(stemFileName)  + ".txt"
+
+        with open(newFileName, "w") as msgFile:
+            msgFile.write(totalText)
+
+        print(newFileName)
+
     
-    # TODO Remove this
-    print("Message Start: " + str(binaryData.find(openTag)))
-    print("Message End: " + str(msgEnd))
-
-    # decode binary into readable text
-    totalText= ""
-    for i in range((msgStart//8), (msgEnd//8)):
-        charStart = i*8
-        charEnd = (i+1)*8
-        totalText += chr(int(binaryData[charStart:charEnd], 2))
-
-    # TODO remove this
-    with open("Blah.txt", "w") as blahFile:
-        blahFile.write(totalText)
-
-    # TODO Remove this
-    print("Total Text: '" + totalText + "'")
-
-
-    # TODO return message text or pass to another program
-
-    # TODO return an error message if the xml tags are not found
-    # indicating that no message was encoded in the image
+    # TODO return error message indicating that no message was encoded in the image
+    else:
+        return False
 
 
 

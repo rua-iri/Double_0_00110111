@@ -1,6 +1,8 @@
 <?php
 
-$targetDir = "uploads/";
+$processType = $_POST["function"];
+$scrtMessage = $_POST["eMessage"];
+$targetDir = "uploads/" . $processType . "/";
 $fileType = explode("/", $_FILES["fileUpload"]["type"])[1];
 $filePath = $targetDir . basename($_FILES["fileUpload"]["name"]);
 
@@ -9,12 +11,10 @@ do {
     $filePath = $targetDir . md5(microtime()) . "." . $fileType;
 } while (file_exists($filePath));
 
-
 $acceptableTypes = array("jpeg", "png");
 
 // TODO redirect to homepage if $uploadSuccess changes to zero
 $uploadSuccess = true;
-
 
 // check the submit button has been pressed
 if (isset($_POST["submit"])) {
@@ -35,9 +35,33 @@ if (isset($_POST["submit"])) {
     }
 }
 
+// if the upload is valid
 if ($uploadSuccess) {
     move_uploaded_file($_FILES["fileUpload"]["tmp_name"], $filePath);
-    echo "Uploaded to: " . $filePath;
+
+    $pyCommand = "python3 imageProcessor.py " . $processType . " " . $filePath;
+
+    // add secret message if the user wants to encrypt
+    if ($processType == "encode") {
+        $pyCommand .= " '" . $scrtMessage . "'";
+    }
+
+    $cmdOutput = trim(shell_exec($pyCommand));
+    $baseFileName = explode("/", $filePath)[2];
+
+    if (strlen($cmdOutput) > 2) {
+
+        // TODO pass text back to homepage to display secret message
+        if ($processType == "encode") {
+            $imgFile = "downloads/" . substr($baseFileName, 0, -4) . "_encoded.png";
+            echo $imgFile;
+            echo "<img src='" . $imgFile . "' alt=''>";
+        } else if ($processType == "decode") {
+            $txtFile = "downloads/messages/" . substr($baseFileName, 0, -3) . "txt";
+            $msgText = file_get_contents($txtFile);
+            echo "<br>Message Text: '" . $msgText . "'<br>";
+        }
+    }
 }
 
 

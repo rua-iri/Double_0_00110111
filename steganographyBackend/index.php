@@ -31,6 +31,31 @@
         <br>
 
         <div>
+            <div>
+                <input type="radio" name="function" id="eRadio" value="encode" checked>
+                <label for="eRadio">
+                    Encode
+                </label>
+            </div>
+
+            <div>
+                <input type="radio" name="function" id="dRadio" value="decode">
+                <label for="dRadio">
+                    Decode
+                </label>
+            </div>
+        </div>
+
+        <br>
+        
+        <!-- TODO use js to hide this if user has selected decode -->
+        <div>
+            <input type="text" name="eMessage" placeholder="Enter Message Here">
+        </div>
+
+        <br>
+
+        <div>
             <input type="submit" value="Submit" name="submit">
         </div>
 
