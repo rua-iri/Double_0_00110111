@@ -47,17 +47,19 @@ if ($uploadSuccess) {
     }
 
     $cmdOutput = trim(shell_exec($pyCommand));
-    $baseFileName = explode("/", $filePath)[2];
+    $newFileName = str_replace("uploads", "downloads", $filePath);
+    $newFileName = explode(".", $newFileName)[0];
 
-    if (strlen($cmdOutput) > 2) {
+
+    if ($cmdOutput != "0") {
 
         // TODO pass text back to homepage to display secret message
         if ($processType == "encode") {
-            $imgFile = "downloads/" . substr($baseFileName, 0, -4) . "_encoded.png";
+            $imgFile = $newFileName . ".png";
             echo $imgFile;
             echo "<img src='" . $imgFile . "' alt=''>";
         } else if ($processType == "decode") {
-            $txtFile = "downloads/messages/" . substr($baseFileName, 0, -3) . "txt";
+            $txtFile = $newFileName . "txt";
             $msgText = file_get_contents($txtFile);
             echo "<br>Message Text: '" . $msgText . "'<br>";
         }

@@ -1,6 +1,8 @@
 import sys
+import os
 from PIL import Image
 import random
+
 
 def main(argv):
 
@@ -19,9 +21,8 @@ def main(argv):
         readFromImage(imgPath)
 
 
-    # TODO return error message if arguments are wrong
     else:
-        pass
+        print("0")
 
 
 # function to check if image is large enough to store message
@@ -69,9 +70,15 @@ def writeToImage(imgName, textToEncode):
     # signify the start and end of the message
     openTag, closeTag = getXmlTags()
 
+    # check that image has not been written to before
+    binaryData = ""
+    for px in imgPixels:
+        binaryData += bin(px[0])[-1] + bin(px[1])[-1] + bin(px[2])[-1]
+
+    isValidImage = False if openTag in binaryData or closeTag in binaryData else True
+
     # check that binary message does not include xml tags before they are added
     isValidMessage = False if openTag in binaryMessage or closeTag in binaryMessage else True
-
     binaryMessage = openTag + binaryMessage + closeTag
 
     isMessageLongEnough = checkIsLongEnough(binaryMessage, imgWidth, imgHeight)
@@ -79,7 +86,7 @@ def writeToImage(imgName, textToEncode):
     # TODO maybe add a second type of encryption for the message contents
 
     # use checkIsLongEnough to ensure that image has enough pixels
-    if isValidMessage and isMessageLongEnough:
+    if isValidMessage and isMessageLongEnough and isValidImage:
 
         # determine the max number of pixels that must be modified to encode the message
         requiredPixels = len(binaryMessage) // 3 + 1
@@ -107,22 +114,23 @@ def writeToImage(imgName, textToEncode):
 
 
         # generate a new name for the file to be saved
-        stemFileName = imgName.split("/")[-1]
-        stemFileName = str(stemFileName.split(".")[0])
-        newFileName = "./downloads/" + stemFileName + "_encoded" +  ".png"
+        newFileName = imgName.replace("uploads", "downloads")
+        newFileName = newFileName.split(".")[0] + ".png"
+
 
         # write to a new image (must be a png file for lossless compression)
         encodedImg = Image.new(img.mode, img.size)
         encodedImg.putdata(imgPixels)
         encodedImg.save(fp=newFileName, format="PNG")
 
-        # TODO delete original image after new image has been uploaded
-        print(newFileName)
 
-    # TODO return error message if the conditions have not been met
+    # TODO create custom error codes to provided feedback to users about what went wrong
     else:
-        return False
+        print("0")
 
+    # delete original image after new image has been processed 
+    # so the directory doesn't balloon in size
+    os.remove(imgName)
 
 
 
@@ -154,17 +162,14 @@ def readFromImage(fileName):
 
         stemFileName = fileName.split("/")[-1]
         stemFileName = str(stemFileName.split(".")[0])
-        newFileName = "downloads/messages/" + str(stemFileName)  + ".txt"
+        newFileName = "downloads/decode/" + str(stemFileName)  + ".txt"
 
         with open(newFileName, "w") as msgFile:
             msgFile.write(totalText)
 
-        print(newFileName)
-
     
-    # TODO return error message indicating that no message was encoded in the image
     else:
-        return False
+        print("0")
 
 
 
