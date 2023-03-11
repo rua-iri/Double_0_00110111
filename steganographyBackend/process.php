@@ -55,14 +55,16 @@ if ($uploadSuccess) {
 
         // TODO pass text back to homepage to display secret message
         if ($processType == "encode") {
-            $imgFile = $newFileName . ".png";
-            echo $imgFile;
-            echo "<img src='" . $imgFile . "' alt=''>";
+            $data = $newFileName . ".png";
+            $dataType = "imagePath";
         } else if ($processType == "decode") {
             $txtFile = $newFileName . "txt";
-            $msgText = file_get_contents($txtFile);
-            echo "<br>Message Text: '" . $msgText . "'<br>";
+            $data = file_get_contents($txtFile);
+            $dataType = "msgText";
         }
+    } else {
+        // redirect home if the process was unsucessful
+        header("Location: index.html");
     }
 }
 
@@ -71,3 +73,32 @@ if ($uploadSuccess) {
 
 
 // TODO redirect to page displaying the encoded image if $uploadSuccess
+
+?>
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Processing...</title>
+</head>
+
+<body>
+    <script>
+        sessionStorage.setItem(<?= $dataType ?>, <?= $data ?>);
+    </script>
+
+    <?php
+
+    // TODO redirect to another page
+    // header("Location:");
+
+    ?>
+
+</body>
+
+</html>
