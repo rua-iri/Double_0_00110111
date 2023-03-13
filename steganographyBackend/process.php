@@ -53,7 +53,6 @@ if ($uploadSuccess) {
 
     if ($cmdOutput != "0") {
 
-        // TODO pass text back to homepage to display secret message
         if ($processType == "encode") {
             $data = $newFileName . ".png";
             $dataType = "imagePath";
@@ -94,8 +93,13 @@ if ($uploadSuccess) {
 
     <?php
 
-    // TODO redirect to another page
-    // header("Location:");
+    if ($processType == "encode") {
+        header("Location: ./encoded");
+
+    } else if ($processType == "decode") {
+        header("Location: ./decoded");
+
+    }
 
     ?>
 
