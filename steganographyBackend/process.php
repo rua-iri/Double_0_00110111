@@ -57,7 +57,7 @@ if ($uploadSuccess) {
             $data = $newFileName . ".png";
             $dataType = "imagePath";
         } else if ($processType == "decode") {
-            $txtFile = $newFileName . "txt";
+            $txtFile = $newFileName . ".txt";
             $data = file_get_contents($txtFile);
             $dataType = "msgText";
         }
@@ -65,13 +65,14 @@ if ($uploadSuccess) {
         // redirect home if the process was unsucessful
         header("Location: index.html");
     }
+} else {
+    // redirect home if the process was unsucessful
+    header("Location: index.html");
 }
 
 
-// TODO execute python program to encode / decode
-
-
-// TODO redirect to page displaying the encoded image if $uploadSuccess
+// store value in sessionStorage
+echo "<script>sessionStorage.setItem('" . $dataType . "', '" . $data . "');</script>";
 
 ?>
 
@@ -87,20 +88,15 @@ if ($uploadSuccess) {
 </head>
 
 <body>
-    <script>
-        sessionStorage.setItem(<?= $dataType ?>, <?= $data ?>);
-    </script>
 
     <?php
 
-    if ($processType == "encode") {
-        header("Location: ./encoded");
 
-    } else if ($processType == "decode") {
-        header("Location: ./decoded");
-
+    if($processType=="encode") {
+        header("Location: /stegano/#/encoded");
+    } else if ($processType=="decode") {
+        header("Location: /stegano/#/decoded");
     }
-
     ?>
 
 </body>
