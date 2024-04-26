@@ -1,28 +1,12 @@
+import json
 import sys
 import os
 from PIL import Image
 import random
+import logging
 
-
-def main(argv):
-
-    # check that the right number of arguments has been passed
-    # and call different function depending on the first argument
-    if len(argv)==3 and argv[0]=="encode":
-
-        imgPath = argv[1]
-        encodeString = argv[2]
-
-        writeToImage(imgPath, encodeString)
-
-    elif len(argv)==2 and argv[0]=="decode":
-        imgPath = argv[1]
-
-        readFromImage(imgPath)
-
-
-    else:
-        print("0")
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.info)
 
 
 # function to check if image is large enough to store message
@@ -35,22 +19,21 @@ def checkIsLongEnough(msg, wdth, hght):
 
 # function to return a list of the binary representations of the xml tags in which messages are enclosed
 def getXmlTags():
-    xTags = []
-    xTags.append(''.join(format(ord(c), '08b') for c in "<msg>"))
-    xTags.append(''.join(format(ord(c), '08b') for c in "</msg>"))
-    return xTags
+    xmlTags = []
+    xmlTags.append("".join(format(ord(c), "08b") for c in "<msg>"))
+    xmlTags.append("".join(format(ord(c), "08b") for c in "</msg>"))
+    return xmlTags
 
 
 # function to get a random location in the image to encode the message
 def getEncodeLocation(reqPixels, maxPixels):
-    encodeLocation = random.randint(0, (maxPixels-reqPixels))
+    encodeLocation = random.randint(0, (maxPixels - reqPixels))
 
     # regenerate encodeLocation until it is divisible by 8
-    while encodeLocation%8:
-        encodeLocation = random.randint(0, (maxPixels-reqPixels))
+    while encodeLocation % 8:
+        encodeLocation = random.randint(0, (maxPixels - reqPixels))
 
     return encodeLocation
-
 
 
 # function to encode message in a given image
@@ -65,8 +48,7 @@ def writeToImage(imgName, textToEncode):
     for ltr in textToEncode:
         binaryMessage += format(ord(ltr), "08b")
 
-
-    # enclose the message in the binary respresentation of the xml tags that 
+    # enclose the message in the binary respresentation of the xml tags that
     # signify the start and end of the message
     openTag, closeTag = getXmlTags()
 
@@ -78,7 +60,9 @@ def writeToImage(imgName, textToEncode):
     isValidImage = False if openTag in binaryData or closeTag in binaryData else True
 
     # check that binary message does not include xml tags before they are added
-    isValidMessage = False if openTag in binaryMessage or closeTag in binaryMessage else True
+    isValidMessage = (
+        False if openTag in binaryMessage or closeTag in binaryMessage else True
+    )
     binaryMessage = openTag + binaryMessage + closeTag
 
     isMessageLongEnough = checkIsLongEnough(binaryMessage, imgWidth, imgHeight)
@@ -93,45 +77,42 @@ def writeToImage(imgName, textToEncode):
 
         # generate random encode location
         encodeLocation = getEncodeLocation(requiredPixels, len(imgPixels))
-        
 
         bIndex = 0
         # iterate through each pixel to be modified
-        for i in range(encodeLocation, (encodeLocation+requiredPixels)):
+        for i in range(encodeLocation, (encodeLocation + requiredPixels)):
 
-                # convert to list so that values can be reassigned
-                imgPixels[i] = list(imgPixels[i])
+            # convert to list so that values can be reassigned
+            imgPixels[i] = list(imgPixels[i])
 
-                # iterate through each colour value for each pixel
-                for x in range(len(imgPixels[i])):
+            # iterate through each colour value for each pixel
+            for x in range(len(imgPixels[i])):
 
-                    # check if i < binaryMessage length
-                    if bIndex < len(binaryMessage):
-                        imgPixels[i][x] = int(bin(imgPixels[i][x])[:-1] + binaryMessage[bIndex], 2)
-                        bIndex+=1
-                
-                imgPixels[i] = tuple(imgPixels[i])
+                # check if i < binaryMessage length
+                if bIndex < len(binaryMessage):
+                    imgPixels[i][x] = int(
+                        bin(imgPixels[i][x])[:-1] + binaryMessage[bIndex], 2
+                    )
+                    bIndex += 1
 
+            imgPixels[i] = tuple(imgPixels[i])
 
         # generate a new name for the file to be saved
         newFileName = imgName.replace("uploads", "downloads")
         newFileName = newFileName.split(".")[0] + ".png"
-
 
         # write to a new image (must be a png file for lossless compression)
         encodedImg = Image.new(img.mode, img.size)
         encodedImg.putdata(imgPixels)
         encodedImg.save(fp=newFileName, format="PNG")
 
-
     # TODO create custom error codes to provided feedback to users about what went wrong
     else:
         print("0")
 
-    # delete original image after new image has been processed 
+    # delete original image after new image has been processed
     # so the directory doesn't balloon in size
     os.remove(imgName)
-
 
 
 # function to extract secret message from a file
@@ -143,36 +124,76 @@ def readFromImage(fileName):
     binaryData = ""
     for px in imgPixels:
         binaryData += bin(px[0])[-1] + bin(px[1])[-1] + bin(px[2])[-1]
-    
 
     # find the start and the end using the binary values for the xml tags
     openTag, closeTag = getXmlTags()
     msgStart = binaryData.find(openTag) + len(openTag)
     msgEnd = binaryData.find(closeTag)
 
-    if msgEnd!=-1:
+    if msgEnd != -1:
 
         # decode binary into readable text
-        totalText= ""
-        for i in range((msgStart//8), (msgEnd//8)):
-            charStart = i*8
-            charEnd = (i+1)*8
+        totalText = ""
+        for i in range((msgStart // 8), (msgEnd // 8)):
+            charStart = i * 8
+            charEnd = (i + 1) * 8
             totalText += chr(int(binaryData[charStart:charEnd], 2))
-
 
         stemFileName = fileName.split("/")[-1]
         stemFileName = str(stemFileName.split(".")[0])
-        newFileName = "downloads/decode/" + str(stemFileName)  + ".txt"
+        newFileName = "downloads/decode/" + str(stemFileName) + ".txt"
 
         with open(newFileName, "w") as msgFile:
             msgFile.write(totalText)
 
-    
     else:
         print("0")
 
 
+def lambda_handler(event, context):
+    """
+    Main function to handle event passed by api call
+    """
+    try:
+        body = json.loads(event.get("body"))
+        operation = body.get("operation")
 
-if __name__=="__main__":
-    main(sys.argv[1:])
+        logger.info("Event: ")
+        logger.info(event)
+        logger.info("Context: ")
+        logger.info(context)
+
+        return {
+        "statusCode": 200,
+        "body": json.dumps({
+            "message": "hello world",
+            # "location": ip.text.replace("\n", "")
+        }),
+    }
+
+        if operation=="encode":
+            # TODO: load image from event
+            # TODO: pass secret message and image stream to writeToImage() function
+            pass
+        elif operation=="decode":
+            pass
+        else:
+            raise Exception
+
+        # check that the right number of arguments has been passed
+        # and call different function depending on the first argument
+        if len(argv) == 3 and argv[0] == "encode":
+            imgPath = argv[1]
+            encodeString = argv[2]
+            writeToImage(imgPath, encodeString)
+        elif len(argv) == 2 and argv[0] == "decode":
+            imgPath = argv[1]
+            readFromImage(imgPath)
+        else:
+            print("0")
+
+    except Exception as e:
+        logger.error(e)
+
+
 
