@@ -1,5 +1,4 @@
 # Double_0_00110111
-![_dd9b67b1-5904-4c5a-adf1-c10d08f87c62](https://github.com/rua-iri/Double_0_00110111/assets/117874491/87f53b7e-528d-4304-a6ec-6513dc41e9f3)
 
 <div align="center">
   <div>
