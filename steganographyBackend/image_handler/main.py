@@ -4,29 +4,31 @@ import os
 from PIL import Image
 import random
 import logging
+import helpers
+import io
 
-logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.info)
+logger = logging.getLogger()
+logger.setLevel(level=logging.INFO)
 
 
-# function to check if image is large enough to store message
-def checkIsLongEnough(msg, wdth, hght):
+# check if image is large enough to store message
+def isImgLongEnough(msg: str, wdth: int, hght: int) -> bool:
     if (len(msg) // 3 + 1) < (wdth * hght):
         return True
     else:
         return False
 
 
-# function to return a list of the binary representations of the xml tags in which messages are enclosed
-def getXmlTags():
-    xmlTags = []
-    xmlTags.append("".join(format(ord(c), "08b") for c in "<msg>"))
-    xmlTags.append("".join(format(ord(c), "08b") for c in "</msg>"))
-    return xmlTags
+# return a list of the binary representations of the xml tags
+def getXmlTags() -> tuple:
+    return (
+        "".join(format(ord(c), "08b") for c in "<msg>"),
+        "".join(format(ord(c), "08b") for c in "</msg>"),
+    )
 
 
-# function to get a random location in the image to encode the message
-def getEncodeLocation(reqPixels, maxPixels):
+# get random location in the image to encode the message
+def getEncodeLocation(reqPixels: int, maxPixels: int) -> int:
     encodeLocation = random.randint(0, (maxPixels - reqPixels))
 
     # regenerate encodeLocation until it is divisible by 8
@@ -37,43 +39,32 @@ def getEncodeLocation(reqPixels, maxPixels):
 
 
 # function to encode message in a given image
-def writeToImage(imgName, textToEncode):
+def writeToImage(image_data, messageText):
+    try:
+        img = Image.frombytes(io.BytesIO(image_data))
+        imgWidth, imgHeight = img.size
+        imgPixels = list(img.getdata())
 
-    img = Image.open(imgName)
-    imgWidth, imgHeight = img.size
-    imgPixels = list(img.getdata())
+        binMessage = ""
+        for letter in messageText:
+            binMessage += format(ord(letter), "08b")
 
-    binaryMessage = ""
+        # enclose the message in xml tags
+        openTag, closeTag = getXmlTags()
 
-    for ltr in textToEncode:
-        binaryMessage += format(ord(ltr), "08b")
+        binaryData = ""
+        for px in imgPixels:
+            binaryData += bin(px[0])[-1] + bin(px[1])[-1] + bin(px[2])[-1]
 
-    # enclose the message in the binary respresentation of the xml tags that
-    # signify the start and end of the message
-    openTag, closeTag = getXmlTags()
+        # check image and message are valid
+        if openTag in binaryData or closeTag in binaryData: raise Exception("Invalid Message")
+        if openTag in binMessage or closeTag in binMessage: raise Exception("Image written to previously")
 
-    # check that image has not been written to before
-    binaryData = ""
-    for px in imgPixels:
-        binaryData += bin(px[0])[-1] + bin(px[1])[-1] + bin(px[2])[-1]
+        binMessage = openTag + binMessage + closeTag
 
-    isValidImage = False if openTag in binaryData or closeTag in binaryData else True
+        if not isImgLongEnough(binMessage, imgWidth, imgHeight): raise Exception("Image too small")
 
-    # check that binary message does not include xml tags before they are added
-    isValidMessage = (
-        False if openTag in binaryMessage or closeTag in binaryMessage else True
-    )
-    binaryMessage = openTag + binaryMessage + closeTag
-
-    isMessageLongEnough = checkIsLongEnough(binaryMessage, imgWidth, imgHeight)
-
-    # TODO maybe add a second type of encryption for the message contents
-
-    # use checkIsLongEnough to ensure that image has enough pixels
-    if isValidMessage and isMessageLongEnough and isValidImage:
-
-        # determine the max number of pixels that must be modified to encode the message
-        requiredPixels = len(binaryMessage) // 3 + 1
+        requiredPixels = len(binMessage) // 3 + 1
 
         # generate random encode location
         encodeLocation = getEncodeLocation(requiredPixels, len(imgPixels))
@@ -81,17 +72,16 @@ def writeToImage(imgName, textToEncode):
         bIndex = 0
         # iterate through each pixel to be modified
         for i in range(encodeLocation, (encodeLocation + requiredPixels)):
-
             # convert to list so that values can be reassigned
             imgPixels[i] = list(imgPixels[i])
 
             # iterate through each colour value for each pixel
             for x in range(len(imgPixels[i])):
 
-                # check if i < binaryMessage length
-                if bIndex < len(binaryMessage):
+                # check if i < binMessage length
+                if bIndex < len(binMessage):
                     imgPixels[i][x] = int(
-                        bin(imgPixels[i][x])[:-1] + binaryMessage[bIndex], 2
+                        bin(imgPixels[i][x])[:-1] + binMessage[bIndex], 2
                     )
                     bIndex += 1
 
@@ -106,13 +96,9 @@ def writeToImage(imgName, textToEncode):
         encodedImg.putdata(imgPixels)
         encodedImg.save(fp=newFileName, format="PNG")
 
-    # TODO create custom error codes to provided feedback to users about what went wrong
-    else:
-        print("0")
-
-    # delete original image after new image has been processed
-    # so the directory doesn't balloon in size
-    os.remove(imgName)
+    except Exception as e:
+        logger.error(e)
+        raise e
 
 
 # function to extract secret message from a file
@@ -155,27 +141,15 @@ def lambda_handler(event, context):
     Main function to handle event passed by api call
     """
     try:
-        body = json.loads(event.get("body"))
-        operation = body.get("operation")
+        logger.info(f"Event: {event}")
+        logger.info("Parsing event body")
+        operation, message, image = helpers.parse_form_data(event=event)
 
-        logger.info("Event: ")
-        logger.info(event)
-        logger.info("Context: ")
-        logger.info(context)
-
-        return {
-        "statusCode": 200,
-        "body": json.dumps({
-            "message": "hello world",
-            # "location": ip.text.replace("\n", "")
-        }),
-    }
-
-        if operation=="encode":
+        if operation == "encode":
             # TODO: load image from event
             # TODO: pass secret message and image stream to writeToImage() function
             pass
-        elif operation=="decode":
+        elif operation == "decode":
             pass
         else:
             raise Exception
@@ -194,6 +168,3 @@ def lambda_handler(event, context):
 
     except Exception as e:
         logger.error(e)
-
-
-
