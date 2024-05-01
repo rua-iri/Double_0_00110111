@@ -1,6 +1,10 @@
 from cgi import FieldStorage
 import io
+import os
+import boto3
 
+
+s3_client = boto3.client("s3")
 
 def parse_form_data(event: dict) -> tuple:
     try:
@@ -40,3 +44,13 @@ def parse_form_data(event: dict) -> tuple:
         
     except Exception as e:
         raise e
+
+
+def put_image_s3(image_data):
+    try:
+        # s3_client.upload_fileobj(image_data)
+        pass
+
+    except Exception as e:
+        raise e
+

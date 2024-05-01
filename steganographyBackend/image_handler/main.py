@@ -6,6 +6,7 @@ import random
 import logging
 import helpers
 import io
+from constants import XML_START, XML_END
 
 logger = logging.getLogger()
 logger.setLevel(level=logging.INFO)
@@ -17,14 +18,6 @@ def isImgLongEnough(msg: str, wdth: int, hght: int) -> bool:
         return True
     else:
         return False
-
-
-# return a list of the binary representations of the xml tags
-def getXmlTags() -> tuple:
-    return (
-        "".join(format(ord(c), "08b") for c in "<msg>"),
-        "".join(format(ord(c), "08b") for c in "</msg>"),
-    )
 
 
 # get random location in the image to encode the message
@@ -45,47 +38,53 @@ def writeToImage(image_data, messageText):
         imgWidth, imgHeight = img.size
         imgPixels = list(img.getdata())
 
+        if img.format != "PNG":
+            raise Exception("Image must be png format")
+
         binMessage = ""
         for letter in messageText:
             binMessage += format(ord(letter), "08b")
 
-        # enclose the message in xml tags
-        openTag, closeTag = getXmlTags()
-
-        binaryData = ""
+        binImgData = ""
         for px in imgPixels:
-            binaryData += bin(px[0])[-1] + bin(px[1])[-1] + bin(px[2])[-1]
+            binImgData += bin(px[0])[-1] + bin(px[1])[-1] + bin(px[2])[-1]
 
         # check image and message are valid
-        if openTag in binaryData or closeTag in binaryData: raise Exception("Invalid Message")
-        if openTag in binMessage or closeTag in binMessage: raise Exception("Image written to previously")
+        if XML_START in binImgData or XML_END in binImgData: 
+            raise Exception("Invalid Message")
+        if XML_START in binMessage or XML_END in binMessage: 
+            raise Exception("Image written to previously")
 
-        binMessage = openTag + binMessage + closeTag
+        binMessage = XML_START + binMessage + XML_END
 
-        if not isImgLongEnough(binMessage, imgWidth, imgHeight): raise Exception("Image too small")
+        if not isImgLongEnough(binMessage, imgWidth, imgHeight): 
+            raise Exception("Image too small")
 
         requiredPixels = len(binMessage) // 3 + 1
 
-        # generate random encode location
         encodeLocation = getEncodeLocation(requiredPixels, len(imgPixels))
 
-        bIndex = 0
+        binaryIndex = 0
         # iterate through each pixel to be modified
-        for i in range(encodeLocation, (encodeLocation + requiredPixels)):
+        for pixelIndex in range(encodeLocation, (encodeLocation + requiredPixels)):
             # convert to list so that values can be reassigned
-            imgPixels[i] = list(imgPixels[i])
+            imgPixels[pixelIndex] = list(imgPixels[pixelIndex])
 
             # iterate through each colour value for each pixel
-            for x in range(len(imgPixels[i])):
-
-                # check if i < binMessage length
-                if bIndex < len(binMessage):
-                    imgPixels[i][x] = int(
-                        bin(imgPixels[i][x])[:-1] + binMessage[bIndex], 2
+            for colourIndex in range(len(imgPixels[pixelIndex])):
+                if binaryIndex < len(binMessage):
+                    
+                    imgPixels[pixelIndex][colourIndex] = int(
+                        bin(imgPixels[pixelIndex][colourIndex])[:-1] + binMessage[binaryIndex], 2
                     )
-                    bIndex += 1
+                    
+                    binaryIndex += 1
 
-            imgPixels[i] = tuple(imgPixels[i])
+            # convert back to tuple
+            imgPixels[pixelIndex] = tuple(imgPixels[pixelIndex])
+
+            
+        # TODO: save to s3 and return object key
 
         # generate a new name for the file to be saved
         newFileName = imgName.replace("uploads", "downloads")
