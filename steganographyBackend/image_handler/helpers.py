@@ -5,6 +5,7 @@ import boto3
 
 
 s3_client = boto3.client("s3")
+ProcessedImageBucket = os.getenv("ProcessedImageBucket")
 
 def parse_form_data(event: dict) -> tuple:
     try:
@@ -46,10 +47,12 @@ def parse_form_data(event: dict) -> tuple:
         raise e
 
 
-def put_image_s3(image_data):
+
+
+def put_image_s3(image_data: bytes, object_key: str) -> str:
     try:
-        # s3_client.upload_fileobj(image_data)
-        pass
+        s3_client.upload_fileobj(image_data, ProcessedImageBucket, object_key)
+        return f"https://{ProcessedImageBucket}.s3.amazonaws.com/{object_key}"
 
     except Exception as e:
         raise e

@@ -23,12 +23,25 @@ Resources:
       Runtime: python3.9
       Architectures:
         - x86_64
+      Environment:
+        Variables:
+          ProcessedImageBucket: !Ref ProcessedImageBucket
       Events:
         ProcessImage:
           Type: Api
           Properties:
             Path: /process
             Method: post
+      Policies:
+        - Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action:
+                - s3:PutObject
+                - s3:GetObject
+              Resource:
+              - !Sub "arn:aws:s3:::${ProcessedImageBucket}"
+
 
 
   ProcessedImageBucket:

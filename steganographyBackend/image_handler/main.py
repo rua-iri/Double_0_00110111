@@ -1,6 +1,7 @@
 import json
 import sys
 import os
+from uuid import uuid4
 from PIL import Image
 import random
 import logging
@@ -32,9 +33,9 @@ def getEncodeLocation(reqPixels: int, maxPixels: int) -> int:
 
 
 # function to encode message in a given image
-def writeToImage(image_data, messageText):
+def writeToImage(image_data: bytes, messageText: str) -> dict:
     try:
-        img = Image.frombytes(io.BytesIO(image_data))
+        img = Image.open(io.BytesIO(image_data))
         imgWidth, imgHeight = img.size
         imgPixels = list(img.getdata())
 
@@ -60,14 +61,17 @@ def writeToImage(image_data, messageText):
         if not isImgLongEnough(binMessage, imgWidth, imgHeight): 
             raise Exception("Image too small")
 
+        logger.info("Image meets requirements")
+
         requiredPixels = len(binMessage) // 3 + 1
 
         encodeLocation = getEncodeLocation(requiredPixels, len(imgPixels))
 
+        logger.info("Initiating pixel modification")
         binaryIndex = 0
         # iterate through each pixel to be modified
         for pixelIndex in range(encodeLocation, (encodeLocation + requiredPixels)):
-            # convert to list so that values can be reassigned
+            # convert to list to make mutable
             imgPixels[pixelIndex] = list(imgPixels[pixelIndex])
 
             # iterate through each colour value for each pixel
@@ -83,17 +87,17 @@ def writeToImage(image_data, messageText):
             # convert back to tuple
             imgPixels[pixelIndex] = tuple(imgPixels[pixelIndex])
 
-            
+        img.putdata(imgPixels)
+
+        buffer = io.BytesIO()
+        img.save(buffer, format="PNG")
+        img_bytes = buffer.getvalue()
+        object_key = f"{uuid4().hex}.png"
+        
         # TODO: save to s3 and return object key
+        img_url = helpers.put_image_s3(img_bytes, object_key)
 
-        # generate a new name for the file to be saved
-        newFileName = imgName.replace("uploads", "downloads")
-        newFileName = newFileName.split(".")[0] + ".png"
-
-        # write to a new image (must be a png file for lossless compression)
-        encodedImg = Image.new(img.mode, img.size)
-        encodedImg.putdata(imgPixels)
-        encodedImg.save(fp=newFileName, format="PNG")
+        return {'status': 'success', 'url': img_url}
 
     except Exception as e:
         logger.error(e)
@@ -142,28 +146,33 @@ def lambda_handler(event, context):
     try:
         logger.info(f"Event: {event}")
         logger.info("Parsing event body")
+        headers = {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Headers': '*'
+        }
+        
         operation, message, image = helpers.parse_form_data(event=event)
 
         if operation == "encode":
-            # TODO: load image from event
-            # TODO: pass secret message and image stream to writeToImage() function
-            pass
+            body = writeToImage(image['value'], message)
         elif operation == "decode":
-            pass
+            body = {}
         else:
-            raise Exception
+            raise Exception("Operation Not Specified")
 
-        # check that the right number of arguments has been passed
-        # and call different function depending on the first argument
-        if len(argv) == 3 and argv[0] == "encode":
-            imgPath = argv[1]
-            encodeString = argv[2]
-            writeToImage(imgPath, encodeString)
-        elif len(argv) == 2 and argv[0] == "decode":
-            imgPath = argv[1]
-            readFromImage(imgPath)
-        else:
-            print("0")
+        
+        return {
+            "headers": headers,
+            "statusCode": 200,
+            "body": json.dumps(body)
+        }
+
 
     except Exception as e:
         logger.error(e)
+        return {
+            "headers": headers,
+            "statusCode": 500,
+            "body": json.dumps({"message": "Internal Server Error"})
+        }
