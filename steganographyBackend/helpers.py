@@ -1,11 +1,11 @@
 from cgi import FieldStorage
 import io
 import os
-import boto3
+# import boto3
 
 
-s3_client = boto3.client("s3")
-ProcessedImageBucket = os.getenv("ProcessedImageBucket")
+# s3_client = boto3.client("s3")
+# ProcessedImageBucket = os.getenv("ProcessedImageBucket")
 
 def parse_form_data(event: dict) -> tuple:
     try:

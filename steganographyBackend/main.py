@@ -5,12 +5,22 @@ from uuid import uuid4
 from PIL import Image
 import random
 import logging
-import helpers
 import io
+import helpers
 from constants import XML_START, XML_END
+
+from fastapi import FastAPI, Form, File, UploadFile
+from typing import Union, Annotated
+
+
+app = FastAPI()
+
+
 
 logger = logging.getLogger()
 logger.setLevel(level=logging.INFO)
+
+
 
 
 # check if image is large enough to store message
@@ -176,3 +186,46 @@ def lambda_handler(event, context):
             "statusCode": 500,
             "body": json.dumps({"message": "Internal Server Error"})
         }
+
+
+
+
+@app.get("/helloworld")
+async def hello_world():
+    return {"Hello": "World"}
+
+
+
+
+@app.post("/encode")
+async def encode_image(
+    message: Annotated[str, Form()], 
+    file: UploadFile,
+    ):
+
+    image_data = await file.read()
+
+    writeToImage(image_data=image_data, messageText=message)
+
+
+    
+    return {
+        "Image Process": "Encode", 
+        "message": message, 
+        "file": file,
+        }
+
+
+
+
+
+
+
+
+
+
+
+        
+
+
+
