@@ -104,10 +104,8 @@ def writeToImage(image_data: bytes, messageText: str) -> dict:
         img_bytes = buffer.getvalue()
         object_key = f"{uuid4().hex}.png"
         
-        # TODO: save to s3 and return object key
-        img_url = helpers.put_image_s3(img_bytes, object_key)
 
-        return {'status': 'success', 'url': img_url}
+        return {'status': 'success', 'url': "todo: put path here"}
 
     except Exception as e:
         logger.error(e)
