@@ -1,7 +1,6 @@
 import json
 from uuid import uuid4
 from PIL import Image
-import random
 import logging
 import io
 import helpers
@@ -15,86 +14,53 @@ from typing import Union, Annotated
 app = FastAPI()
 
 
-
 logger = logging.getLogger()
 logger.setLevel(level=logging.INFO)
 
 
 
-
-# check if image is large enough to store message
-def isImgLongEnough(msg: str, wdth: int, hght: int) -> bool:
-    if (len(msg) // 3 + 1) < (wdth * hght):
-        return True
-    else:
-        return False
-
-
-# get random location in the image to encode the message
-def getEncodeLocation(reqPixels: int, maxPixels: int) -> int:
-    encodeLocation = random.randint(0, (maxPixels - reqPixels))
-
-    # regenerate encodeLocation until it is divisible by 8
-    while encodeLocation % 8:
-        encodeLocation = random.randint(0, (maxPixels - reqPixels))
-
-    return encodeLocation
-
-
 # function to encode message in a given image
 def write_to_image(image_data: bytes, messageText: str) -> dict:
     try:
-        img = Image.open(io.BytesIO(image_data))
+        img: Image = Image.open(io.BytesIO(image_data))
         imgWidth, imgHeight = img.size
-        imgPixels = list(img.getdata())
+        imgPixels: list = list(img.getdata())
+
 
         if img.format != "PNG":
             raise Exception("Image must be png format")
 
-        binMessage = ""
+        binMessage: str = ""
         for letter in messageText:
             binMessage += format(ord(letter), "08b")
 
-        binImgData = ""
+        binImgData: str = ""
         for px in imgPixels:
             binImgData += bin(px[0])[-1] + bin(px[1])[-1] + bin(px[2])[-1]
 
-        # check image and message are valid
-        if XML_START in binImgData or XML_END in binImgData: 
-            raise Exception("Invalid Message")
-        if XML_START in binMessage or XML_END in binMessage: 
-            raise Exception("Image written to previously")
+        helpers.is_image_already_encoded(binImgData, binMessage)
 
         binMessage = XML_START + binMessage + XML_END
 
-        if not isImgLongEnough(binMessage, imgWidth, imgHeight): 
+        if not helpers.isImgLongEnough(binMessage, imgWidth, imgHeight): 
             raise Exception("Image too small")
 
         logger.info("Image meets requirements")
 
         requiredPixels = len(binMessage) // 3 + 1
 
-        encodeLocation = getEncodeLocation(requiredPixels, len(imgPixels))
+        encodeLocation: int = helpers.get_encode_location(requiredPixels, len(imgPixels))
 
         logger.info("Initiating pixel modification")
-        binaryIndex = 0
-        # iterate through each pixel to be modified
-        for pixelIndex in range(encodeLocation, (encodeLocation + requiredPixels)):
-            # convert to list to make mutable
-            imgPixels[pixelIndex] = list(imgPixels[pixelIndex])
 
-            # iterate through each colour value for each pixel
-            for colourIndex in range(len(imgPixels[pixelIndex])):
-                if binaryIndex < len(binMessage):
-                    
-                    imgPixels[pixelIndex][colourIndex] = int(
-                        bin(imgPixels[pixelIndex][colourIndex])[:-1] + binMessage[binaryIndex], 2
-                    )
-                    
-                    binaryIndex += 1
-
-            # convert back to tuple
-            imgPixels[pixelIndex] = tuple(imgPixels[pixelIndex])
+        imgPixels = helpers.encode_image(
+            encodeLocation, 
+            requiredPixels, 
+            imgPixels, 
+            binMessage
+            )
+        
+        
 
         img.putdata(imgPixels)
 
@@ -211,7 +177,6 @@ async def encode_image(
     image_response = write_to_image(image_data=image_data, messageText=message)
 
 
-    
     return {
         "Image Process": "Encode",
         "status": image_response.get("status"),
