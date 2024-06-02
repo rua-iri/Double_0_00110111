@@ -1,4 +1,3 @@
-
 from constants import XML_START, XML_END
 import random
 
@@ -11,16 +10,14 @@ def isImgLongEnough(msg: str, wdth: int, hght: int) -> bool:
         return False
 
 
-
 def is_image_already_encoded(binary_img_data: str, binary_message: str) -> bool:
     # check image and message are valid
-        if XML_START in binary_img_data or XML_END in binary_img_data: 
-            raise Exception("Invalid Message")
-        if XML_START in binary_message or XML_END in binary_message: 
-            raise Exception("Image written to previously")
-        
-        return True
+    if XML_START in binary_img_data or XML_END in binary_img_data:
+        raise Exception("Invalid Message")
+    if XML_START in binary_message or XML_END in binary_message:
+        raise Exception("Image written to previously")
 
+    return True
 
 
 # get random location in the image to encode the message
@@ -34,7 +31,6 @@ def get_encode_location(reqPixels: int, maxPixels: int) -> int:
     return encodeLocation
 
 
-
 def save_encoded_image(img_name, img_data):
     img_location = f"encoded/{img_name}"
     try:
@@ -43,14 +39,12 @@ def save_encoded_image(img_name, img_data):
 
     except Exception as e:
         raise e
-        
 
 
 def encode_image(
-        encode_location: int, 
-        required_pixels: int, 
-        image_pixels: list, 
-        binary_message: str):
+    encode_location: int, required_pixels: int, image_pixels: list, binary_message: str
+) -> list:
+    
 
     binary_index = 0
     # iterate through each pixel to be modified
@@ -61,19 +55,29 @@ def encode_image(
         # iterate through each colour value for each pixel
         for colourIndex in range(len(image_pixels[pixelIndex])):
             if binary_index < len(binary_message):
-                
+
                 image_pixels[pixelIndex][colourIndex] = int(
-                    bin(image_pixels[pixelIndex][colourIndex])[:-1] + binary_message[binary_index], 2
+                    bin(image_pixels[pixelIndex][colourIndex])[:-1]
+                    + binary_message[binary_index],
+                    2,
                 )
-                
+
                 binary_index += 1
 
         # convert back to tuple
         image_pixels[pixelIndex] = tuple(image_pixels[pixelIndex])
 
-    
     return image_pixels
 
 
-    
+def decode_image(
+    msg_start_location: int, msg_end_location: int, binary_data: str
+) -> str:
+    # decode binary into readable text
+    totalText: str = ""
+    for i in range((msg_start_location // 8), (msg_end_location // 8)):
+        charStart: int = i * 8
+        charEnd: int = (i + 1) * 8
+        totalText += chr(int(binary_data[charStart:charEnd], 2))
 
+    return totalText
