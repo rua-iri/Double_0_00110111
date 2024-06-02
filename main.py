@@ -36,7 +36,7 @@ def write_to_image(image_data: bytes, messageText: str) -> dict:
         for px in imgPixels:
             binImgData += bin(px[0])[-1] + bin(px[1])[-1] + bin(px[2])[-1]
 
-        helpers.is_image_already_encoded(binImgData, binMessage)
+        not helpers.is_image_already_encoded(binImgData, binMessage)
 
         binMessage = XML_START + binMessage + XML_END
 
