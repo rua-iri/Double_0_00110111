@@ -1,6 +1,4 @@
 import json
-import sys
-import os
 from uuid import uuid4
 from PIL import Image
 import random
@@ -10,6 +8,7 @@ import helpers
 from constants import XML_START, XML_END
 
 from fastapi import FastAPI, Form, File, UploadFile
+from fastapi.responses import FileResponse
 from typing import Union, Annotated
 
 
@@ -43,7 +42,7 @@ def getEncodeLocation(reqPixels: int, maxPixels: int) -> int:
 
 
 # function to encode message in a given image
-def writeToImage(image_data: bytes, messageText: str) -> dict:
+def write_to_image(image_data: bytes, messageText: str) -> dict:
     try:
         img = Image.open(io.BytesIO(image_data))
         imgWidth, imgHeight = img.size
@@ -103,9 +102,11 @@ def writeToImage(image_data: bytes, messageText: str) -> dict:
         img.save(buffer, format="PNG")
         img_bytes = buffer.getvalue()
         object_key = f"{uuid4().hex}.png"
+
+        helpers.save_encoded_image(object_key, img_bytes)
         
 
-        return {'status': 'success', 'url': "todo: put path here"}
+        return {'status': 'success', 'url': f"/image/{object_key}"}
 
     except Exception as e:
         logger.error(e)
@@ -163,7 +164,7 @@ def lambda_handler(event, context):
         operation, message, image = helpers.parse_form_data(event=event)
 
         if operation == "encode":
-            body = writeToImage(image['value'], message)
+            body = write_to_image(image['value'], message)
         elif operation == "decode":
             body = {}
         else:
@@ -188,8 +189,12 @@ def lambda_handler(event, context):
 
 
 
+
 @app.get("/helloworld")
 async def hello_world():
+    """
+    Hello World Endpoint for testing purposes
+    """
     return {"Hello": "World"}
 
 
@@ -203,18 +208,27 @@ async def encode_image(
 
     image_data = await file.read()
 
-    writeToImage(image_data=image_data, messageText=message)
+    image_response = write_to_image(image_data=image_data, messageText=message)
 
 
     
     return {
-        "Image Process": "Encode", 
-        "message": message, 
-        "file": file,
+        "Image Process": "Encode",
+        "status": image_response.get("status"),
+        "url": image_response.get("url"),
         }
 
 
 
+
+
+@app.get("/image/{img_filename}")
+async def get_encoded_image(img_filename: str):
+    """
+    Retrieve the encoded image for the user using the 
+    """
+
+    return FileResponse(f"encoded/{img_filename}")
 
 
 
