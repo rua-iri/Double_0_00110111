@@ -1,4 +1,5 @@
 import json
+import os
 from uuid import uuid4
 from PIL import Image
 import logging
@@ -6,7 +7,7 @@ import io
 import helpers
 from constants import XML_START, XML_END
 
-from fastapi import FastAPI, Form, UploadFile
+from fastapi import FastAPI, Form, HTTPException, UploadFile
 from fastapi.responses import FileResponse
 from typing import Annotated
 
@@ -89,7 +90,7 @@ def read_from_image(image_data) -> dict:
         msg_end_location: int = binaryData.find(XML_END)
 
         if msg_end_location == -1:
-            raise Exception("Image Not Encoded")
+            return HTTPException(status_code=400, detail="Image Not Encoded")
 
         msg_text: str = helpers.decode_image(
             msg_start_location, msg_end_location, binaryData
@@ -129,7 +130,14 @@ async def encode(
 async def decode(file: UploadFile):
 
     image_data = await file.read()
+
+    if not helpers.is_valid_file(image_data):
+        HTTPException(status_code=400, detail="Image file invalid")
+
     image_response = read_from_image(image_data)
+
+    if type(image_response) == HTTPException:
+        raise image_response
 
     return {
         "Image Process": "Encode",
@@ -141,7 +149,12 @@ async def decode(file: UploadFile):
 @app.get("/image/{img_filename}")
 async def get_encoded_image(img_filename: str):
     """
-    Retrieve the encoded image for the user using the
+    Retrieve the encoded image for the user using the filename passed via the URL
     """
 
-    return FileResponse(f"encoded/{img_filename}")
+    file_path = f"encoded/{img_filename}"
+
+    if not os.path.isfile(file_path):
+        raise HTTPException(status_code=404, detail="Image not found")
+
+    return FileResponse(file_path)

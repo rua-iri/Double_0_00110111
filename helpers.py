@@ -148,3 +148,10 @@ def decode_image(
         totalText += chr(int(binary_data[charStart:charEnd], 2))
 
     return totalText
+
+
+def is_valid_file(file):
+
+    # TODO: implement file validation here
+    
+    return True
