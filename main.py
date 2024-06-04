@@ -26,8 +26,9 @@ def write_to_image(image_data: bytes, messageText: str) -> dict:
         imgWidth, imgHeight = img.size
         imgPixels: list = list(img.getdata())
 
-        if img.format != "PNG":
-            raise Exception("Image must be png format")
+
+        if not helpers.is_valid_file(img):
+            return HTTPException(status_code=400, detail="Invalid Image")
 
         binMessage: str = ""
         for letter in messageText:
@@ -118,6 +119,9 @@ async def encode(
 
     image_data = await file.read()
     image_response = write_to_image(image_data=image_data, messageText=message)
+
+    if type(image_response) == HTTPException:
+        raise image_response
 
     return {
         "Image Process": "Encode",

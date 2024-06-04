@@ -1,5 +1,6 @@
 from constants import XML_START, XML_END
 import random
+from PIL import Image
 
 
 # check if image is large enough to store message
@@ -150,8 +151,12 @@ def decode_image(
     return totalText
 
 
-def is_valid_file(file):
+def is_valid_file(image: Image):
 
+    if image.format != "PNG":
+        return False
+
+    if image.size
     # TODO: implement file validation here
     
     return True
