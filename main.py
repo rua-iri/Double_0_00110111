@@ -28,7 +28,7 @@ def write_to_image(image_data: bytes, messageText: str) -> dict:
 
 
         if not helpers.is_valid_file(img):
-            return HTTPException(status_code=400, detail="Invalid image format")
+            return HTTPException(status_code=400, detail="Image file invalid")
 
         binMessage: str = ""
         for letter in messageText:
@@ -82,6 +82,9 @@ def read_from_image(image_data) -> dict:
     try:
         img: Image = Image.open(io.BytesIO(image_data))
         img_pixels: list = list(img.getdata())
+
+        if not helpers.is_valid_file(img):
+            return HTTPException(status_code=400, detail="Image file invalid")
 
         # concatenate the data from the least significant bit of every pixel
         binaryData: str = ""
@@ -137,9 +140,6 @@ async def decode(file: UploadFile):
 
     image_data = await file.read()
 
-    if not helpers.is_valid_file(image_data):
-        HTTPException(status_code=400, detail="Image file invalid")
-
     image_response = read_from_image(image_data)
 
     if type(image_response) == HTTPException:
@@ -164,3 +164,5 @@ async def get_encoded_image(img_filename: str):
         raise HTTPException(status_code=404, detail="Image not found")
 
     return FileResponse(file_path)
+
+
