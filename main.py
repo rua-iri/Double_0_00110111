@@ -28,7 +28,7 @@ def write_to_image(image_data: bytes, messageText: str) -> dict:
 
 
         if not helpers.is_valid_file(img):
-            return HTTPException(status_code=400, detail="Invalid Image")
+            return HTTPException(status_code=400, detail="Invalid image format")
 
         binMessage: str = ""
         for letter in messageText:
@@ -38,12 +38,14 @@ def write_to_image(image_data: bytes, messageText: str) -> dict:
         for px in imgPixels:
             binImgData += bin(px[0])[-1] + bin(px[1])[-1] + bin(px[2])[-1]
 
-        not helpers.is_image_already_encoded(binImgData, binMessage)
+        if helpers.is_image_already_encoded(binImgData, binMessage):
+            return HTTPException(status_code=400, detail="Image or message have already been encoded")
+
 
         binMessage = XML_START + binMessage + XML_END
 
         if not helpers.isImgLongEnough(binMessage, imgWidth, imgHeight):
-            raise Exception("Image too small")
+            return HTTPException(status_code=400, detail="Image too small to contain message")
 
         logger.info("Image meets requirements")
 

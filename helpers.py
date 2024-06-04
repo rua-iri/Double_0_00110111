@@ -40,9 +40,9 @@ def is_image_already_encoded(binary_img_data: str, binary_message: str) -> bool:
     """
 
     if XML_START in binary_img_data or XML_END in binary_img_data:
-        raise Exception("Invalid Message")
+        return True
     if XML_START in binary_message or XML_END in binary_message:
-        raise Exception("Image written to previously")
+        return True
 
     return False
 
@@ -67,12 +67,12 @@ def get_encode_location(reqPixels: int, maxPixels: int) -> int:
     return encodeLocation
 
 
-def save_encoded_image(img_name, img_data):
+def save_encoded_image(img_name: str, img_data: str):
     """Saves the modified image to the server
 
     Args:
-        img_name (_type_): The filename to which the image will be saved
-        img_data (_type_): The binary data of the image file
+        img_name (str): The filename to which the image will be saved
+        img_data (str): The binary data of the image file
 
     Raises:
         e: An exception which could arise while saving the file
@@ -156,7 +156,6 @@ def is_valid_file(image: Image):
     if image.format != "PNG":
         return False
 
-    if image.size
-    # TODO: implement file validation here
+    # TODO: implement file size validation here
     
     return True
