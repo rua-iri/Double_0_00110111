@@ -2,6 +2,8 @@ from main import write_to_image, read_from_image
 from constants import LOREM_MESSAGE
 from fastapi import HTTPException
 import re
+from tqdm import tqdm
+
 
 
 def test_read_from_image():
@@ -114,11 +116,35 @@ def test_write_to_image_long_message():
 
 
 if __name__ == "__main__":
-    test_read_from_image()
-    test_read_from_image_not_encoded()
-    test_read_from_image_invalid_format()
-    test_write_to_image()
-    test_write_to_image_invalid_format()
-    test_write_to_image_image_encoded()
-    test_write_to_image_message_encoded()
-    test_write_to_image_long_message()
+    p_bar: tqdm = tqdm(total=8, desc="Running tests")
+    p_bar.colour = "green"
+
+    try:
+        test_read_from_image()
+        p_bar.update(1)
+        test_read_from_image_not_encoded()
+        p_bar.update(1)
+        test_read_from_image_invalid_format()
+        p_bar.update(1)
+        test_write_to_image()
+        p_bar.update(1)
+        test_write_to_image_invalid_format()
+        p_bar.update(1)
+        test_write_to_image_image_encoded()
+        p_bar.update(1)
+        test_write_to_image_message_encoded()
+        p_bar.update(1)
+        test_write_to_image_long_message()
+        p_bar.update(1)
+
+        p_bar.close()
+        print("All Tests Pass")
+    
+    except Exception as e:
+        p_bar.colour = "red"
+        print(e)
+        p_bar.close()
+
+    
+
+    
