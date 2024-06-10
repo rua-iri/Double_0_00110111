@@ -1,150 +1,120 @@
+import unittest
 from main import write_to_image, read_from_image
 from constants import LOREM_MESSAGE
 from fastapi import HTTPException
 import re
-from tqdm import tqdm
 
 
+class TestReadFromImage(unittest.TestCase):
 
-def test_read_from_image():
-    expected_val = {
-        "status": "success",
-        "message": "I am putting a secret message at a random location",
-    }
+    def __init__(self, methodName: str = "runTest") -> None:
+        super().__init__(methodName)
 
-    with open("testImages/testImage_encoded.png", "rb") as file:
-        file_data = file.read()
+    def test_read_success(self):
+        expected_val = {
+            "status": "success",
+            "message": "I am putting a secret message at a random location",
+        }
 
-    assert expected_val == read_from_image(file_data)
+        with open("testImages/testImage_encoded.png", "rb") as file:
+            file_data = file.read()
 
+        self.assertEqual(expected_val, read_from_image(file_data))
 
-def test_read_from_image_not_encoded():
-    expected_val = HTTPException(status_code=400, detail="Image Not Encoded")
+    def test_read_not_encoded(self):
+        expected_val = HTTPException(status_code=400, detail="Image Not Encoded")
 
-    with open("testImages/testImage.png", "rb") as file:
-        file_data = file.read()
+        with open("testImages/testImage.png", "rb") as file:
+            file_data = file.read()
 
-    actual_val = read_from_image(file_data)
+        actual_val = read_from_image(file_data)
 
-    assert expected_val.status_code == actual_val.status_code
-    assert expected_val.detail == actual_val.detail
+        self.assertEqual(expected_val.status_code, actual_val.status_code)
+        self.assertEqual(expected_val.detail, actual_val.detail)
 
+    def test_read_invalid_format(self):
+        expected_val = HTTPException(status_code=400, detail="Image file invalid")
 
-def test_read_from_image_invalid_format():
+        with open("testImages/testImage.jpg", "rb") as file:
+            file_data = file.read()
 
-    expected_val = HTTPException(status_code=400, detail="Image file invalid")
+        actual_val = read_from_image(file_data)
 
-    with open("testImages/testImage.jpg", "rb") as file:
-        file_data = file.read()
-
-    actual_val = read_from_image(file_data)
-
-    assert expected_val.status_code == actual_val.status_code
-    assert expected_val.detail == actual_val.detail
-
-
-def test_write_to_image():
-    expected_val = {
-        "status": "success",
-        "url": f"/image/9545a140951246ae8f253b805c946500.png",
-    }
-
-    with open("testImages/testImage.png", "rb") as file:
-        file_data = file.read()
-
-    actual_val = write_to_image(file_data, "Test Message")
-
-    regex_search_result = re.search("^/image/.{32}.png$", actual_val["url"])
-
-    assert expected_val["status"] == actual_val["status"]
-    assert type(regex_search_result) == re.Match
+        self.assertEqual(expected_val.status_code, actual_val.status_code)
+        self.assertEqual(expected_val.detail, actual_val.detail)
 
 
-def test_write_to_image_invalid_format():
-    expected_val = HTTPException(status_code=400, detail="Image file invalid")
+class TestWriteToImage(unittest.TestCase):
 
-    with open("testImages/testImage.jpg", "rb") as file:
-        file_data = file.read()
+    def __init__(self, methodName: str = "runTest") -> None:
+        super().__init__(methodName)
 
-    actual_val: HTTPException = write_to_image(file_data, "Test Message")
+    def test_write_success(self):
+        expected_val = {
+            "status": "success",
+            "url": f"/image/9545a140951246ae8f253b805c946500.png",
+        }
 
-    assert actual_val.status_code == expected_val.status_code
-    assert actual_val.detail == expected_val.detail
+        with open("testImages/testImage.png", "rb") as file:
+            file_data = file.read()
 
+        actual_val = write_to_image(file_data, "Test Message")
 
-def test_write_to_image_image_encoded():
-    expected_val = HTTPException(
-        status_code=400, detail="Image or message have already been encoded"
-    )
+        regex_search_result = re.search("^/image/.{32}.png$", actual_val["url"])
 
-    with open("testImages/testImage_encoded.png", "rb") as file:
-        file_data = file.read()
+        self.assertEqual(expected_val["status"], actual_val["status"])
+        self.assertEqual(type(regex_search_result), re.Match)
 
-    actual_val: HTTPException = write_to_image(file_data, "Test Message")
+    def test_write_invalid_format(self):
+        expected_val = HTTPException(status_code=400, detail="Image file invalid")
 
-    assert actual_val.status_code == expected_val.status_code
-    assert actual_val.detail == expected_val.detail
+        with open("testImages/testImage.jpg", "rb") as file:
+            file_data = file.read()
 
+        actual_val: HTTPException = write_to_image(file_data, "Test Message")
 
-def test_write_to_image_message_encoded():
-    expected_val = HTTPException(
-        status_code=400, detail="Image or message have already been encoded"
-    )
+        self.assertEqual(actual_val.status_code, expected_val.status_code)
+        self.assertEqual(actual_val.detail, expected_val.detail)
 
-    with open("testImages/testImage.png", "rb") as file:
-        file_data = file.read()
+    def test_write_image_already_encoded(self):
+        expected_val = HTTPException(
+            status_code=400, detail="Image or message have already been encoded"
+        )
 
-    actual_val: HTTPException = write_to_image(file_data, "<msg>Test Message</msg>")
+        with open("testImages/testImage_encoded.png", "rb") as file:
+            file_data = file.read()
 
-    assert actual_val.status_code == expected_val.status_code
-    assert actual_val.detail == expected_val.detail
+        actual_val: HTTPException = write_to_image(file_data, "Test Message")
 
+        self.assertEqual(actual_val.status_code, expected_val.status_code)
+        self.assertEqual(actual_val.detail, expected_val.detail)
 
-def test_write_to_image_long_message():
-    expected_val = HTTPException(status_code=400, detail="Image too small to contain message")
+    def test_write_message_already_encoded(self):
+        expected_val = HTTPException(
+            status_code=400, detail="Image or message have already been encoded"
+        )
 
-    with open("testImages/testImage_favicon.png", "rb") as file:
-        file_data = file.read()
+        with open("testImages/testImage.png", "rb") as file:
+            file_data = file.read()
 
-    actual_val: HTTPException = write_to_image(file_data, LOREM_MESSAGE)
+        actual_val: HTTPException = write_to_image(file_data, "<msg>Test Message</msg>")
 
-    assert actual_val.status_code == expected_val.status_code
-    assert actual_val.detail == expected_val.detail
+        self.assertEqual(actual_val.status_code, expected_val.status_code)
+        self.assertEqual(actual_val.detail, expected_val.detail)
 
+    def test_write_message_too_long(self):
+        expected_val = HTTPException(
+            status_code=400, detail="Image too small to contain message"
+        )
 
+        with open("testImages/testImage_favicon.png", "rb") as file:
+            file_data = file.read()
 
+        actual_val: HTTPException = write_to_image(file_data, LOREM_MESSAGE)
+
+        self.assertEqual(actual_val.status_code, expected_val.status_code)
+        self.assertEqual(actual_val.detail, expected_val.detail)
 
 
 if __name__ == "__main__":
-    p_bar: tqdm = tqdm(total=8, desc="Running tests")
-    p_bar.colour = "green"
-
-    try:
-        test_read_from_image()
-        p_bar.update(1)
-        test_read_from_image_not_encoded()
-        p_bar.update(1)
-        test_read_from_image_invalid_format()
-        p_bar.update(1)
-        test_write_to_image()
-        p_bar.update(1)
-        test_write_to_image_invalid_format()
-        p_bar.update(1)
-        test_write_to_image_image_encoded()
-        p_bar.update(1)
-        test_write_to_image_message_encoded()
-        p_bar.update(1)
-        test_write_to_image_long_message()
-        p_bar.update(1)
-
-        p_bar.close()
-        print("All Tests Pass")
-    
-    except Exception as e:
-        p_bar.colour = "red"
-        print(e)
-        p_bar.close()
-
-    
-
-    
+    unittest.main()
