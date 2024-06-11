@@ -140,7 +140,7 @@ def decode_image(
     Returns:
         str: The text encoded in the image
     """
-    
+
     # decode binary into readable text
     totalText: str = ""
     for i in range((msg_start_location // 8), (msg_end_location // 8)):
@@ -157,11 +157,5 @@ def is_valid_file_format(image: Image):
         return False
 
     # TODO: implement file size validation here
-    
+
     return True
-
-
-
-
-
-

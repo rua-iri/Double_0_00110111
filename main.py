@@ -1,4 +1,3 @@
-import json
 import os
 from uuid import uuid4
 from PIL import Image
@@ -26,7 +25,6 @@ def write_to_image(image_data: bytes, messageText: str) -> dict:
         imgWidth, imgHeight = img.size
         imgPixels: list = list(img.getdata())
 
-
         if not helpers.is_valid_file_format(img):
             return HTTPException(status_code=400, detail="Image file invalid")
 
@@ -39,13 +37,16 @@ def write_to_image(image_data: bytes, messageText: str) -> dict:
             binImgData += bin(px[0])[-1] + bin(px[1])[-1] + bin(px[2])[-1]
 
         if helpers.is_image_already_encoded(binImgData, binMessage):
-            return HTTPException(status_code=400, detail="Image or message have already been encoded")
-
+            return HTTPException(
+                status_code=400, detail="Image or message have already been encoded"
+            )
 
         binMessage = XML_START + binMessage + XML_END
 
         if not helpers.isImgLongEnough(binMessage, imgWidth, imgHeight):
-            return HTTPException(status_code=400, detail="Image too small to contain message")
+            return HTTPException(
+                status_code=400, detail="Image too small to contain message"
+            )
 
         logger.info("Image meets requirements")
 
@@ -170,5 +171,3 @@ async def get_encoded_image(img_filename: str):
         raise HTTPException(status_code=404, detail="Image not found")
 
     return FileResponse(file_path)
-
-
