@@ -5,7 +5,7 @@ from PIL import Image
 import logging
 import io
 import helpers
-from constants import XML_START, XML_END
+from constants import XML_START, XML_END, TEN_MB
 
 from fastapi import FastAPI, Form, HTTPException, UploadFile
 from fastapi.responses import FileResponse
@@ -27,7 +27,7 @@ def write_to_image(image_data: bytes, messageText: str) -> dict:
         imgPixels: list = list(img.getdata())
 
 
-        if not helpers.is_valid_file(img):
+        if not helpers.is_valid_file_format(img):
             return HTTPException(status_code=400, detail="Image file invalid")
 
         binMessage: str = ""
@@ -83,7 +83,7 @@ def read_from_image(image_data) -> dict:
         img: Image = Image.open(io.BytesIO(image_data))
         img_pixels: list = list(img.getdata())
 
-        if not helpers.is_valid_file(img):
+        if not helpers.is_valid_file_format(img):
             return HTTPException(status_code=400, detail="Image file invalid")
 
         # concatenate the data from the least significant bit of every pixel
@@ -122,6 +122,9 @@ async def encode(
     file: UploadFile,
 ):
 
+    if file.size > TEN_MB:
+        return HTTPException(status_code=403, detail="Image Size Too Large")
+
     image_data = await file.read()
     image_response = write_to_image(image_data=image_data, messageText=message)
 
@@ -137,6 +140,9 @@ async def encode(
 
 @app.post("/decode")
 async def decode(file: UploadFile):
+
+    if file.size > TEN_MB:
+        return HTTPException(status_code=403, detail="Image Size Too Large")
 
     image_data = await file.read()
 
