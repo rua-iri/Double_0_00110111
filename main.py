@@ -129,7 +129,7 @@ async def encode(
     image_data = await file.read()
     image_response = write_to_image(image_data=image_data, messageText=message)
 
-    if type(image_response) == HTTPException:
+    if type(image_response) is HTTPException:
         raise image_response
 
     return {
@@ -149,7 +149,7 @@ async def decode(file: UploadFile):
 
     image_response = read_from_image(image_data)
 
-    if type(image_response) == HTTPException:
+    if type(image_response) is HTTPException:
         raise image_response
 
     return {

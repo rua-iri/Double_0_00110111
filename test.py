@@ -24,7 +24,8 @@ class TestReadFromImage(unittest.TestCase):
         self.assertEqual(expected_val, read_from_image(file_data))
 
     def test_read_not_encoded(self):
-        expected_val = HTTPException(status_code=400, detail="Image Not Encoded")
+        expected_val = HTTPException(
+            status_code=400, detail="Image Not Encoded")
 
         with open("sample_images/sample.png", "rb") as file:
             file_data = file.read()
@@ -35,7 +36,8 @@ class TestReadFromImage(unittest.TestCase):
         self.assertEqual(expected_val.detail, actual_val.detail)
 
     def test_read_invalid_format(self):
-        expected_val = HTTPException(status_code=400, detail="Image file invalid")
+        expected_val = HTTPException(
+            status_code=400, detail="Image file invalid")
 
         with open("sample_images/sample.jpg", "rb") as file:
             file_data = file.read()
@@ -54,7 +56,7 @@ class TestWriteToImage(unittest.TestCase):
     def test_write_success(self):
         expected_val = {
             "status": "success",
-            "url": f"/image/9545a140951246ae8f253b805c946500.png",
+            "url": "/image/9545a140951246ae8f253b805c946500.png",
         }
 
         with open("sample_images/sample.png", "rb") as file:
@@ -62,7 +64,8 @@ class TestWriteToImage(unittest.TestCase):
 
         actual_val = write_to_image(file_data, "Test Message")
 
-        regex_search_result = re.search("^/image/.{32}.png$", actual_val["url"])
+        regex_search_result = re.search(
+            "^/image/.{32}.png$", actual_val["url"])
 
         self.assertEqual(expected_val["status"], actual_val["status"])
         self.assertEqual(type(regex_search_result), re.Match)
@@ -74,12 +77,9 @@ class TestWriteToImage(unittest.TestCase):
         else:
             raise Exception("Encoded File Not Found")
 
-
-
-
-
     def test_write_invalid_format(self):
-        expected_val = HTTPException(status_code=400, detail="Image file invalid")
+        expected_val = HTTPException(
+            status_code=400, detail="Image file invalid")
 
         with open("sample_images/sample.jpg", "rb") as file:
             file_data = file.read()
@@ -110,7 +110,8 @@ class TestWriteToImage(unittest.TestCase):
         with open("sample_images/sample.png", "rb") as file:
             file_data = file.read()
 
-        actual_val: HTTPException = write_to_image(file_data, "<msg>Test Message</msg>")
+        actual_val: HTTPException = write_to_image(
+            file_data, "<msg>Test Message</msg>")
 
         self.assertEqual(actual_val.status_code, expected_val.status_code)
         self.assertEqual(actual_val.detail, expected_val.detail)
