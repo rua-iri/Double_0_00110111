@@ -159,3 +159,8 @@ def is_valid_file_format(image: Image):
     # TODO: implement file size validation here
 
     return True
+
+
+def encrypt_message(message: str) -> str:
+    message_encrypted = message
+    return message_encrypted
