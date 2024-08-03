@@ -48,4 +48,4 @@ COPY . .
 EXPOSE 8000
 
 # Run the application.
-CMD python3 main.py
+CMD fastapi dev main.py --port 8000 --host 0.0.0.0
