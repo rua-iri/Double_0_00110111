@@ -10,3 +10,27 @@ This is a Python API to carry out [Steganography](https://en.wikipedia.org/wiki/
   <br>
 </div>
 
+
+
+## Setup
+
+```bash
+git clone https://github.com/rua-iri/Double_0_00110111.git
+
+cd Double_0_00110111
+
+docker compose up --build
+```
+
+
+### Sanity Check 
+
+```bash
+curl localhost:8000/helloworld
+```
+
+## Tests
+
+
+
+
