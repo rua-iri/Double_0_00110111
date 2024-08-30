@@ -33,6 +33,9 @@ curl localhost:8000/helloworld
 
 ## Test
 
+```
+docker exec <container_name> python3 -m test -v
+```
 
 
 
