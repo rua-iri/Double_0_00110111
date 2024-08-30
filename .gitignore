@@ -160,4 +160,5 @@ cython_debug/
 #.idea/
 
 .aws*
-encoded/
+encoded/*
+!encoded/sample_encoded.png
