@@ -19,6 +19,8 @@ git clone https://github.com/rua-iri/Double_0_00110111.git
 
 cd Double_0_00110111
 
+mkdir encoded
+
 docker compose up --build
 ```
 

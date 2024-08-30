@@ -161,4 +161,3 @@ cython_debug/
 
 .aws*
 encoded/*
-!encoded/sample_encoded.png
