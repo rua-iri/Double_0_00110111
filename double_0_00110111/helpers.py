@@ -1,6 +1,10 @@
+import boto3
 from constants import XML_START, XML_END
 import random
 from PIL import Image
+
+
+s3_client = boto3.client("s3")
 
 
 # check if image is large enough to store message
@@ -164,3 +168,17 @@ def is_valid_file_format(image: Image):
 def encrypt_message(message: str) -> str:
     message_encrypted = message
     return message_encrypted
+
+
+def retrieve_img_s3(filename: str):
+    bucket_name = ""
+    return s3_client.get_obejct(
+        Bucket=bucket_name,
+        Key=filename
+    )
+
+
+def save_img_s3(filename: str, img_data: str):
+    bucket_name = ""
+
+    # TODO: upload img to s3
