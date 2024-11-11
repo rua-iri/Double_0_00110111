@@ -2,9 +2,16 @@ import boto3
 from constants import XML_START, XML_END
 import random
 from PIL import Image
+from os import getenv
+from dotenv import load_dotenv
 
+load_dotenv()
 
-s3_client = boto3.client("s3")
+boto3.setup_default_session(profile_name=getenv("AWS_PROFILE"))
+s3_client = boto3.client(
+    "s3",
+    region_name=getenv("AWS_REGION")
+)
 
 
 # check if image is large enough to store message
@@ -171,14 +178,29 @@ def encrypt_message(message: str) -> str:
 
 
 def retrieve_img_s3(filename: str):
-    bucket_name = ""
-    return s3_client.get_obejct(
-        Bucket=bucket_name,
-        Key=filename
-    )
+    try:
+        s3_object = s3_client.get_object(
+            Bucket=getenv("AWS_S3_BUCKET"),
+            Key=filename
+        )
+
+        print(s3_object)
+        print('\n\n asdfasdf \n\n')
+
+        return s3_object.get("Body").read()
+
+    except Exception as e:
+        print(e)
+        return None
 
 
 def save_img_s3(filename: str, img_data: str):
-    bucket_name = ""
+    try:
+        s3_client.put_object(
+            Bucket=getenv("AWS_S3_BUCKET"),
+            Key=filename,
+            Body=img_data
+        )
 
-    # TODO: upload img to s3
+    except Exception as e:
+        raise e

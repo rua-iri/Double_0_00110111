@@ -1,3 +1,4 @@
+import json
 import os
 from uuid import uuid4
 from PIL import Image
@@ -6,7 +7,7 @@ import io
 import helpers
 from constants import XML_START, XML_END, TEN_MB
 
-from fastapi import FastAPI, Form, HTTPException, UploadFile
+from fastapi import FastAPI, Form, HTTPException, Response, UploadFile
 from fastapi.responses import FileResponse
 from typing import Annotated
 
@@ -38,7 +39,8 @@ def write_to_image(image_data: bytes, messageText: str) -> dict:
 
         if helpers.is_image_already_encoded(binImgData, binMessage):
             return HTTPException(
-                status_code=400, detail="Image or message have already been encoded"
+                status_code=400,
+                detail="Image or message have already been encoded"
             )
 
         binMessage = XML_START + binMessage + XML_END
@@ -162,7 +164,8 @@ async def decode(file: UploadFile):
 @app.get("/image/{img_filename}")
 async def get_encoded_image(img_filename: str):
     """
-    Retrieve the encoded image for the user using the filename passed via the URL
+    Retrieve the encoded image for the user
+    using the filename passed via the URL
     """
 
     file_path = f"encoded/{img_filename}"
@@ -171,3 +174,27 @@ async def get_encoded_image(img_filename: str):
         raise HTTPException(status_code=404, detail="Image not found")
 
     return FileResponse(file_path)
+
+
+@app.get(
+    "/dev/image/{img_filename}",
+    responses={200: {"content": {"image/png": {}}}},
+    response_class=Response
+)
+def get_encoded_image_dev(img_filename: str):
+    """
+    Retrieve the encoded image for the user from s3
+    using the filename passed via the URL
+    """
+    print(img_filename)
+
+    img_data = helpers.retrieve_img_s3(img_filename)
+    print(img_data)
+
+    if not img_data:
+        raise HTTPException(status_code=404, detail="Image not found")
+
+    return Response(
+        content=img_data,
+        media_type="image/png"
+    )
