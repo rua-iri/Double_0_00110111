@@ -1,5 +1,3 @@
-import json
-import os
 from uuid import uuid4
 from PIL import Image
 import logging
@@ -8,7 +6,6 @@ import helpers
 from constants import XML_START, XML_END, TEN_MB
 
 from fastapi import FastAPI, Form, HTTPException, Response, UploadFile
-from fastapi.responses import FileResponse
 from typing import Annotated
 
 
@@ -71,9 +68,12 @@ def write_to_image(image_data: bytes, messageText: str) -> dict:
         img_bytes = buffer.getvalue()
         object_key = f"{uuid4().hex}.png"
 
-        helpers.save_encoded_image(object_key, img_bytes)
+        helpers.save_img_s3(object_key, img_bytes)
 
-        return {"status": "success", "url": f"/image/{object_key}"}
+        return {
+            "status": "success",
+            "url": object_key
+        }
 
     except Exception as e:
         logger.error(e)
@@ -161,27 +161,12 @@ async def decode(file: UploadFile):
     }
 
 
-@app.get("/image/{img_filename}")
-async def get_encoded_image(img_filename: str):
-    """
-    Retrieve the encoded image for the user
-    using the filename passed via the URL
-    """
-
-    file_path = f"encoded/{img_filename}"
-
-    if not os.path.isfile(file_path):
-        raise HTTPException(status_code=404, detail="Image not found")
-
-    return FileResponse(file_path)
-
-
 @app.get(
-    "/dev/image/{img_filename}",
+    "/image/{img_filename}",
     responses={200: {"content": {"image/png": {}}}},
     response_class=Response
 )
-def get_encoded_image_dev(img_filename: str):
+def get_encoded_image(img_filename: str):
     """
     Retrieve the encoded image for the user from s3
     using the filename passed via the URL

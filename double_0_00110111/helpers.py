@@ -78,25 +78,6 @@ def get_encode_location(reqPixels: int, maxPixels: int) -> int:
     return encodeLocation
 
 
-def save_encoded_image(img_name: str, img_data: str):
-    """Saves the modified image to the server
-
-    Args:
-        img_name (str): The filename to which the image will be saved
-        img_data (str): The binary data of the image file
-
-    Raises:
-        e: An exception which could arise while saving the file
-    """
-    img_location = f"encoded/{img_name}"
-    try:
-        with open(img_location, "wb") as img_file:
-            img_file.write(img_data)
-
-    except Exception as e:
-        raise e
-
-
 def encode_image(
     encode_location: int, required_pixels: int, image_pixels: list, binary_message: str
 ) -> list:
@@ -196,11 +177,15 @@ def retrieve_img_s3(filename: str):
 
 def save_img_s3(filename: str, img_data: str):
     try:
-        s3_client.put_object(
+        a = s3_client.put_object(
             Bucket=getenv("AWS_S3_BUCKET"),
             Key=filename,
             Body=img_data
         )
+
+        print()
+        print(a)
+        print()
 
     except Exception as e:
         raise e

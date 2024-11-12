@@ -56,7 +56,7 @@ class TestWriteToImage(unittest.TestCase):
     def test_write_success(self):
         expected_val = {
             "status": "success",
-            "url": "/image/9545a140951246ae8f253b805c946500.png",
+            "url": "9545a140951246ae8f253b805c946500.png",
         }
 
         with open("../sample_images/sample.png", "rb") as file:
@@ -65,7 +65,7 @@ class TestWriteToImage(unittest.TestCase):
         actual_val = write_to_image(file_data, "Test Message")
 
         regex_search_result = re.search(
-            "^/image/.{32}.png$", actual_val["url"])
+            "^{32}.png$", actual_val["url"])
 
         self.assertEqual(expected_val["status"], actual_val["status"])
         self.assertEqual(type(regex_search_result), re.Match)
