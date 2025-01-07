@@ -111,7 +111,7 @@ def read_from_image(image_data) -> dict:
         logger.error(e)
 
 
-@app.get("/helloworld")
+@app.get("/hello")
 async def hello_world():
     """
     Hello World Endpoint for testing purposes
