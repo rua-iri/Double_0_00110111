@@ -171,10 +171,8 @@ def get_encoded_image(img_filename: str):
     Retrieve the encoded image for the user from s3
     using the filename passed via the URL
     """
-    print(img_filename)
 
     img_data = helpers.retrieve_img_s3(img_filename)
-    print(img_data)
 
     if not img_data:
         raise HTTPException(status_code=404, detail="Image not found")

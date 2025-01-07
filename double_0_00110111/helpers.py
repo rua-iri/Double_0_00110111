@@ -33,7 +33,9 @@ def isImgLongEnough(msg: str, wdth: int, hght: int) -> bool:
         return False
 
 
-def is_image_already_encoded(binary_img_data: str, binary_message: str) -> bool:
+def is_image_already_encoded(
+        binary_img_data: str,
+        binary_message: str) -> bool:
     """Checks that the image has not already been encoded with
     a message by this program and that the message does not include
     the XML tags used to denote the beginning and end of a message
@@ -79,25 +81,35 @@ def get_encode_location(reqPixels: int, maxPixels: int) -> int:
 
 
 def encode_image(
-    encode_location: int, required_pixels: int, image_pixels: list, binary_message: str
+    encode_location: int,
+    required_pixels: int,
+    image_pixels: list,
+    binary_message: str
 ) -> list:
     """
     Handles the encoding of a message into the binary data of the image
     by modifying the least significant bit
 
     Args:
-        encode_location (int): The start location where the message should begin
-        required_pixels (int): The number of pixels which should be modified
-        image_pixels (list): A list containing the rgb values of every pixel in the image
+        encode_location (int): The start location where
+            the message should begin
+        required_pixels (int): The number of pixels which
+            should be modified
+        image_pixels (list): A list containing the rgb values
+            of every pixel in the image
         binary_message (str): The message to be encoded, converted into binary
 
     Returns:
-        list: A modified version of the image_pixels list which now contains the binary_message
+        list: A modified version of the image_pixels list
+            which now contains the binary_message
     """
 
     binary_index = 0
     # iterate through each pixel to be modified
-    for pixelIndex in range(encode_location, (encode_location + required_pixels)):
+    min_pix_index = encode_location
+    max_pix_index = (encode_location + required_pixels)
+
+    for pixelIndex in range(min_pix_index, max_pix_index):
         # convert to list to make mutable
         image_pixels[pixelIndex] = list(image_pixels[pixelIndex])
 
@@ -127,7 +139,8 @@ def decode_image(
     Args:
         msg_start_location (int): The location where the message begins
         msg_end_location (int): The location where the message ends
-        binary_data (str): The binary data from the least significant bit of every pixel
+        binary_data (str): The binary data from the least
+            significant bit of every pixel
 
     Returns:
         str: The text encoded in the image

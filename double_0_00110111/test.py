@@ -3,8 +3,6 @@ from main import write_to_image, read_from_image
 from constants import LOREM_MESSAGE
 from fastapi import HTTPException
 import re
-from os import remove as del_file
-from os.path import exists as does_file_exist
 
 
 class TestReadFromImage(unittest.TestCase):
@@ -70,12 +68,13 @@ class TestWriteToImage(unittest.TestCase):
         self.assertEqual(expected_val["status"], actual_val["status"])
         self.assertEqual(type(regex_search_result), re.Match)
 
-        file_location = actual_val['url'].replace("image", "encoded")[1:]
+        # TODO: rewrite below code to check if the file exists in
+        # s3 bucket not in local storage
 
-        if does_file_exist(file_location):
-            del_file(file_location)
-        else:
-            raise Exception("Encoded File Not Found")
+        # if does_file_exist(file_location):
+        #     del_file(file_location)
+        # else:
+        #     raise Exception("Encoded File Not Found")
 
     def test_write_invalid_format(self):
         expected_val = HTTPException(
