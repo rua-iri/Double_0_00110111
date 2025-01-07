@@ -65,7 +65,7 @@ class TestWriteToImage(unittest.TestCase):
         actual_val = write_to_image(file_data, "Test Message")
 
         regex_search_result = re.search(
-            "^{32}.png$", actual_val["url"])
+            "^[a-zA-Z0-9]{32}.png$", actual_val["url"])
 
         self.assertEqual(expected_val["status"], actual_val["status"])
         self.assertEqual(type(regex_search_result), re.Match)
@@ -91,7 +91,8 @@ class TestWriteToImage(unittest.TestCase):
 
     def test_write_image_already_encoded(self):
         expected_val = HTTPException(
-            status_code=400, detail="Image or message have already been encoded"
+            status_code=400,
+            detail="Image or message have already been encoded"
         )
 
         with open("../sample_images/sample_encoded.png", "rb") as file:
@@ -104,7 +105,8 @@ class TestWriteToImage(unittest.TestCase):
 
     def test_write_message_already_encoded(self):
         expected_val = HTTPException(
-            status_code=400, detail="Image or message have already been encoded"
+            status_code=400,
+            detail="Image or message have already been encoded"
         )
 
         with open("../sample_images/sample.png", "rb") as file:
