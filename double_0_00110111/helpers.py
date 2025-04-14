@@ -156,9 +156,9 @@ def decode_image(
     return totalText
 
 
-def is_valid_file_format(image: Image):
+def is_valid_file_format(image: Image, file_format: str):
 
-    if image.format != "PNG":
+    if file_format != "PNG":
         return False
 
     # TODO: implement file size validation here

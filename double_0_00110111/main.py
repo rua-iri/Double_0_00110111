@@ -20,10 +20,17 @@ logger.setLevel(level=logging.INFO)
 def write_to_image(image_data: bytes, messageText: str) -> dict:
     try:
         img: Image = Image.open(io.BytesIO(image_data))
+        file_format = img.format
+
+        if img.mode != "RGB":
+            img = img.convert("RGB")
+
         imgWidth, imgHeight = img.size
         imgPixels: list = list(img.getdata())
 
-        if not helpers.is_valid_file_format(img):
+        print(img.mode)
+
+        if not helpers.is_valid_file_format(img, file_format):
             return HTTPException(status_code=400, detail="Image file invalid")
 
         binMessage: str = ""
@@ -57,6 +64,8 @@ def write_to_image(image_data: bytes, messageText: str) -> dict:
 
         logger.info("Initiating pixel modification")
 
+        print(binMessage)
+
         imgPixels = helpers.encode_image(
             encodeLocation, requiredPixels, imgPixels, binMessage
         )
@@ -84,9 +93,14 @@ def write_to_image(image_data: bytes, messageText: str) -> dict:
 def read_from_image(image_data) -> dict:
     try:
         img: Image = Image.open(io.BytesIO(image_data))
+        file_format = img.format
+
+        if img.mode != "RGB":
+            img = img.convert("RGB")
+
         img_pixels: list = list(img.getdata())
 
-        if not helpers.is_valid_file_format(img):
+        if not helpers.is_valid_file_format(img, file_format):
             return HTTPException(status_code=400, detail="Image file invalid")
 
         # concatenate the data from the least significant bit of every pixel
