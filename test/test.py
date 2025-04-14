@@ -1,6 +1,6 @@
 import unittest
 from main import write_to_image, read_from_image
-from constants import LOREM_MESSAGE
+from double_0_00110111.constants import LOREM_MESSAGE
 from fastapi import HTTPException
 import re
 import boto3
@@ -19,7 +19,7 @@ class TestReadFromImage(unittest.TestCase):
             "message": "I am putting a secret message at a random location",
         }
 
-        with open("../sample_images/sample_encoded.png", "rb") as file:
+        with open("sample_images/sample_encoded.png", "rb") as file:
             file_data = file.read()
 
         self.assertEqual(expected_val, read_from_image(file_data))
@@ -28,7 +28,7 @@ class TestReadFromImage(unittest.TestCase):
         expected_val = HTTPException(
             status_code=400, detail="Image Not Encoded")
 
-        with open("../sample_images/sample.png", "rb") as file:
+        with open("sample_images/sample.png", "rb") as file:
             file_data = file.read()
 
         actual_val = read_from_image(file_data)
@@ -40,7 +40,7 @@ class TestReadFromImage(unittest.TestCase):
         expected_val = HTTPException(
             status_code=400, detail="Image file invalid")
 
-        with open("../sample_images/sample.jpg", "rb") as file:
+        with open("sample_images/sample.jpg", "rb") as file:
             file_data = file.read()
 
         actual_val = read_from_image(file_data)
@@ -70,7 +70,7 @@ class TestWriteToImage(unittest.TestCase):
             "url": "9545a140951246ae8f253b805c946500.png",
         }
 
-        with open("../sample_images/sample.png", "rb") as file:
+        with open("sample_images/sample.png", "rb") as file:
             file_data = file.read()
 
         actual_val = write_to_image(file_data, "Test Message")
@@ -92,7 +92,7 @@ class TestWriteToImage(unittest.TestCase):
         expected_val = HTTPException(
             status_code=400, detail="Image file invalid")
 
-        with open("../sample_images/sample.jpg", "rb") as file:
+        with open("sample_images/sample.jpg", "rb") as file:
             file_data = file.read()
 
         actual_val: HTTPException = write_to_image(file_data, "Test Message")
@@ -106,7 +106,7 @@ class TestWriteToImage(unittest.TestCase):
             detail="Image or message have already been encoded"
         )
 
-        with open("../sample_images/sample_encoded.png", "rb") as file:
+        with open("sample_images/sample_encoded.png", "rb") as file:
             file_data = file.read()
 
         actual_val: HTTPException = write_to_image(file_data, "Test Message")
@@ -120,7 +120,7 @@ class TestWriteToImage(unittest.TestCase):
             detail="Image or message have already been encoded"
         )
 
-        with open("../sample_images/sample.png", "rb") as file:
+        with open("sample_images/sample.png", "rb") as file:
             file_data = file.read()
 
         actual_val: HTTPException = write_to_image(
@@ -134,7 +134,7 @@ class TestWriteToImage(unittest.TestCase):
             status_code=400, detail="Image too small to contain message"
         )
 
-        with open("../sample_images/sample_favicon.png", "rb") as file:
+        with open("sample_images/sample_favicon.png", "rb") as file:
             file_data = file.read()
 
         actual_val: HTTPException = write_to_image(file_data, LOREM_MESSAGE)

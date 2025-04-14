@@ -2,8 +2,8 @@ from uuid import uuid4
 from PIL import Image
 import logging
 import io
-import helpers
-from constants import XML_START, XML_END, TEN_MB
+from double_0_00110111 import helpers
+from double_0_00110111.constants import XML_START, XML_END, TEN_MB
 
 from fastapi import FastAPI, Form, HTTPException, Response, UploadFile
 from typing import Annotated
@@ -27,8 +27,6 @@ def write_to_image(image_data: bytes, messageText: str) -> dict:
 
         imgWidth, imgHeight = img.size
         imgPixels: list = list(img.getdata())
-
-        print(img.mode)
 
         if not helpers.is_valid_file_format(img, file_format):
             return HTTPException(status_code=400, detail="Image file invalid")
@@ -63,8 +61,6 @@ def write_to_image(image_data: bytes, messageText: str) -> dict:
         )
 
         logger.info("Initiating pixel modification")
-
-        print(binMessage)
 
         imgPixels = helpers.encode_image(
             encodeLocation, requiredPixels, imgPixels, binMessage

@@ -1,5 +1,5 @@
 import boto3
-from constants import XML_START, XML_END
+from .constants import XML_START, XML_END
 import random
 from PIL import Image
 from os import getenv
@@ -178,9 +178,6 @@ def retrieve_img_s3(filename: str):
             Key=filename
         )
 
-        print(s3_object)
-        print('\n\n asdfasdf \n\n')
-
         return s3_object.get("Body").read()
 
     except Exception as e:
@@ -190,15 +187,11 @@ def retrieve_img_s3(filename: str):
 
 def save_img_s3(filename: str, img_data: str):
     try:
-        a = s3_client.put_object(
+        s3_client.put_object(
             Bucket=getenv("AWS_S3_BUCKET"),
             Key=filename,
             Body=img_data
         )
-
-        print()
-        print(a)
-        print()
 
     except Exception as e:
         raise e
