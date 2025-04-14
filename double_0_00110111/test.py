@@ -3,6 +3,9 @@ from main import write_to_image, read_from_image
 from constants import LOREM_MESSAGE
 from fastapi import HTTPException
 import re
+import boto3
+from os import getenv
+from dotenv import load_dotenv
 
 
 class TestReadFromImage(unittest.TestCase):
@@ -51,6 +54,16 @@ class TestWriteToImage(unittest.TestCase):
     def __init__(self, methodName: str = "runTest") -> None:
         super().__init__(methodName)
 
+    def setUp(self):
+        load_dotenv()
+
+        boto3.setup_default_session(profile_name=getenv("AWS_PROFILE"))
+        self.s3_client = boto3.client(
+            "s3",
+            region_name=getenv("AWS_REGION")
+        )
+        return super().setUp()
+
     def test_write_success(self):
         expected_val = {
             "status": "success",
@@ -68,13 +81,12 @@ class TestWriteToImage(unittest.TestCase):
         self.assertEqual(expected_val["status"], actual_val["status"])
         self.assertEqual(type(regex_search_result), re.Match)
 
-        # TODO: rewrite below code to check if the file exists in
-        # s3 bucket not in local storage
+        object_key = actual_val.get("url")
 
-        # if does_file_exist(file_location):
-        #     del_file(file_location)
-        # else:
-        #     raise Exception("Encoded File Not Found")
+        self.s3_client.head_object(
+            Bucket=getenv('AWS_S3_BUCKET'),
+            Key=object_key
+        )
 
     def test_write_invalid_format(self):
         expected_val = HTTPException(
