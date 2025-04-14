@@ -28,7 +28,7 @@ def write_to_image(image_data: bytes, messageText: str) -> dict:
         imgWidth, imgHeight = img.size
         imgPixels: list = list(img.getdata())
 
-        if not helpers.is_valid_file_format(img, file_format):
+        if not helpers.is_valid_file_format(file_format):
             return HTTPException(status_code=400, detail="Image file invalid")
 
         binMessage: str = ""
@@ -96,7 +96,7 @@ def read_from_image(image_data) -> dict:
 
         img_pixels: list = list(img.getdata())
 
-        if not helpers.is_valid_file_format(img, file_format):
+        if not helpers.is_valid_file_format(file_format):
             return HTTPException(status_code=400, detail="Image file invalid")
 
         # concatenate the data from the least significant bit of every pixel
