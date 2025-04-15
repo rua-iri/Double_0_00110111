@@ -1,4 +1,11 @@
+import io
+from uuid import uuid4
+from PIL import Image
 import boto3
+
+from double_0_00110111 import helpers
+import logging
+from fastapi import HTTPException
 from .constants import XML_START, XML_END
 import random
 from os import getenv
@@ -12,9 +19,10 @@ s3_client = boto3.client(
     region_name=getenv("AWS_REGION")
 )
 
+logger = logging.getLogger(__name__)
 
-# check if image is large enough to store message
-def isImgLongEnough(msg: str, wdth: int, hght: int) -> bool:
+
+def is_img_long_enough(msg: str, wdth: int, hght: int) -> bool:
     """Checks that the image contains the minimum number of pixels
 
     Args:
@@ -59,7 +67,6 @@ def is_image_already_encoded(
     return False
 
 
-# get random location in the image to encode the message
 def get_encode_location(reqPixels: int, maxPixels: int) -> int:
     """Finds a random location in the file to encode the message
 
@@ -183,6 +190,16 @@ def retrieve_img_s3(filename: str):
 
 
 def save_img_s3(filename: str, img_data: str):
+    """Save an image file to an S3 bucket
+
+    Args:
+        filename (str): The name that the object should be saved as
+        img_data (str): The binary image data that should
+        be written to the object
+
+    Raises:
+        e: Exception that may occur while uploading
+    """
     try:
         s3_client.put_object(
             Bucket=getenv("AWS_S3_BUCKET"),
@@ -192,3 +209,137 @@ def save_img_s3(filename: str, img_data: str):
 
     except Exception as e:
         raise e
+
+
+def read_from_image(image_data: bytes) -> dict:
+    """Handle the image data passed from the API endpoint
+    and extract the text encoded in it
+
+    Args:
+        image_data (bytes): The bytes data loaded from the image
+
+    Raises:
+        HTTPException: The image is not in the correct format
+        HTTPException: The image has not been encoded with a message
+        HTTPException: A generic exception to handle other cases
+
+    Returns:
+        dict: The Response status and message contained within the message
+    """
+    try:
+        img: Image = Image.open(io.BytesIO(image_data))
+        file_format = img.format
+
+        if img.mode != "RGB":
+            img = img.convert("RGB")
+
+        img_pixels: list = list(img.getdata())
+
+        if not helpers.is_valid_file_format(file_format):
+            raise HTTPException(status_code=400, detail="Image file invalid")
+
+        # concatenate the data from the least significant bit of every pixel
+        binaryData: str = ""
+        for px in img_pixels:
+            binaryData += bin(px[0])[-1] + bin(px[1])[-1] + bin(px[2])[-1]
+
+        # find the start and the end using the binary values for the xml tags
+        msg_start_location: int = binaryData.find(XML_START) + len(XML_START)
+        msg_end_location: int = binaryData.find(XML_END)
+
+        if msg_end_location == -1:
+            raise HTTPException(status_code=400, detail="Image Not Encoded")
+
+        msg_text: str = helpers.decode_image(
+            msg_start_location, msg_end_location, binaryData
+        )
+
+        return {"status": "success", "message": msg_text}
+
+    except Exception as e:
+        logger.error(e)
+        raise HTTPException(status_code=500, detail="Something went wrong")
+
+
+def write_to_image(image_data: bytes, messageText: str) -> dict:
+    """Write the secret message to the image and store it in s3
+
+    Args:
+        image_data (bytes): The bytes data of the image file
+        messageText (str): The secret message to be encoded
+
+    Raises:
+        HTTPException: An image of an invalid format has been sent
+        HTTPException: The image has already been encoded with a message
+        HTTPException: The image is not large enough to contain
+        the secret message
+        HTTPException: A generic exception to handle other cases
+
+    Returns:
+        dict: The status of the upload and the object's key in s3
+    """
+    try:
+        img: Image = Image.open(io.BytesIO(image_data))
+        file_format = img.format
+
+        if img.mode != "RGB":
+            img = img.convert("RGB")
+
+        imgWidth, imgHeight = img.size
+        imgPixels: list = list(img.getdata())
+
+        if not is_valid_file_format(file_format):
+            raise HTTPException(status_code=400, detail="Image file invalid")
+
+        binMessage: str = ""
+        for letter in messageText:
+            binMessage += format(ord(letter), "08b")
+
+        binImgData: str = ""
+        for px in imgPixels:
+            binImgData += bin(px[0])[-1] + bin(px[1])[-1] + bin(px[2])[-1]
+
+        if is_image_already_encoded(binImgData, binMessage):
+            raise HTTPException(
+                status_code=400,
+                detail="Image or message have already been encoded"
+            )
+
+        binMessage = XML_START + binMessage + XML_END
+
+        if not is_img_long_enough(binMessage, imgWidth, imgHeight):
+            raise HTTPException(
+                status_code=400, detail="Image too small to contain message"
+            )
+
+        logger.info("Image meets requirements")
+
+        requiredPixels = len(binMessage) // 3 + 1
+
+        encodeLocation: int = get_encode_location(
+            requiredPixels, len(imgPixels)
+        )
+
+        logger.info("Initiating pixel modification")
+
+        imgPixels = encode_image(
+            encodeLocation, requiredPixels, imgPixels, binMessage
+        )
+
+        img.putdata(imgPixels)
+
+        buffer = io.BytesIO()
+        img.save(buffer, format="PNG")
+        img_bytes = buffer.getvalue()
+        object_key = f"{uuid4().hex}.png"
+
+        save_img_s3(object_key, img_bytes)
+
+        return {
+            "status": "success",
+            "url": object_key
+        }
+
+    except Exception as e:
+        logger.error(e)
+        raise HTTPException(status_code=500, detail="Something went wrong")

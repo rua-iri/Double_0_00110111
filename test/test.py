@@ -1,5 +1,6 @@
 import unittest
-from main import write_to_image, read_from_image
+from double_0_00110111.helpers import read_from_image
+from double_0_00110111.helpers import write_to_image
 from double_0_00110111.constants import LOREM_MESSAGE
 from fastapi import HTTPException
 import re
