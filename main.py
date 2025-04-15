@@ -29,7 +29,7 @@ def write_to_image(image_data: bytes, messageText: str) -> dict:
         imgPixels: list = list(img.getdata())
 
         if not helpers.is_valid_file_format(file_format):
-            return HTTPException(status_code=400, detail="Image file invalid")
+            raise HTTPException(status_code=400, detail="Image file invalid")
 
         binMessage: str = ""
         for letter in messageText:
@@ -40,7 +40,7 @@ def write_to_image(image_data: bytes, messageText: str) -> dict:
             binImgData += bin(px[0])[-1] + bin(px[1])[-1] + bin(px[2])[-1]
 
         if helpers.is_image_already_encoded(binImgData, binMessage):
-            return HTTPException(
+            raise HTTPException(
                 status_code=400,
                 detail="Image or message have already been encoded"
             )
@@ -48,7 +48,7 @@ def write_to_image(image_data: bytes, messageText: str) -> dict:
         binMessage = XML_START + binMessage + XML_END
 
         if not helpers.isImgLongEnough(binMessage, imgWidth, imgHeight):
-            return HTTPException(
+            raise HTTPException(
                 status_code=400, detail="Image too small to contain message"
             )
 
@@ -97,7 +97,7 @@ def read_from_image(image_data) -> dict:
         img_pixels: list = list(img.getdata())
 
         if not helpers.is_valid_file_format(file_format):
-            return HTTPException(status_code=400, detail="Image file invalid")
+            raise HTTPException(status_code=400, detail="Image file invalid")
 
         # concatenate the data from the least significant bit of every pixel
         binaryData: str = ""
@@ -109,7 +109,7 @@ def read_from_image(image_data) -> dict:
         msg_end_location: int = binaryData.find(XML_END)
 
         if msg_end_location == -1:
-            return HTTPException(status_code=400, detail="Image Not Encoded")
+            raise HTTPException(status_code=400, detail="Image Not Encoded")
 
         msg_text: str = helpers.decode_image(
             msg_start_location, msg_end_location, binaryData
@@ -136,13 +136,10 @@ async def encode(
 ):
 
     if file.size > TEN_MB:
-        return HTTPException(status_code=403, detail="Image Size Too Large")
+        raise HTTPException(status_code=403, detail="Image Size Too Large")
 
     image_data = await file.read()
     image_response = write_to_image(image_data=image_data, messageText=message)
-
-    if type(image_response) is HTTPException:
-        raise image_response
 
     return {
         "Image Process": "Encode",
@@ -155,14 +152,11 @@ async def encode(
 async def decode(file: UploadFile):
 
     if file.size > TEN_MB:
-        return HTTPException(status_code=403, detail="Image Size Too Large")
+        raise HTTPException(status_code=403, detail="Image Size Too Large")
 
     image_data = await file.read()
 
     image_response = read_from_image(image_data)
-
-    if type(image_response) is HTTPException:
-        raise image_response
 
     return {
         "Image Process": "Encode",

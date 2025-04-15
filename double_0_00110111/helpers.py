@@ -1,7 +1,6 @@
 import boto3
 from .constants import XML_START, XML_END
 import random
-from PIL import Image
 from os import getenv
 from dotenv import load_dotenv
 
