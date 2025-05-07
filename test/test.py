@@ -4,8 +4,6 @@ from double_0_00110111.helpers import write_to_image
 from double_0_00110111.constants import LOREM_MESSAGE
 from fastapi import HTTPException
 import re
-from os import getenv
-from dotenv import load_dotenv
 
 
 class TestReadFromImage(unittest.TestCase):
@@ -55,8 +53,6 @@ class TestWriteToImage(unittest.TestCase):
         super().__init__(methodName)
 
     def setUp(self):
-        load_dotenv()
-
         return super().setUp()
 
     def test_write_success(self):
