@@ -7,7 +7,7 @@
 # Want to help us make this template better? Share your feedback here: https://forms.gle/ybq9Krt8jtBL3iCk7
 
 ARG PYTHON_VERSION=3.11.2
-FROM python:${PYTHON_VERSION}-slim as base
+FROM python:${PYTHON_VERSION}-slim AS base
 
 # Prevents Python from writing pyc files.
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -30,7 +30,7 @@ RUN adduser \
     --uid "${UID}" \
     appuser
 
-    
+
 # Copy the source code into the container.
 COPY --chown=appuser . .
 
@@ -50,4 +50,4 @@ USER appuser
 EXPOSE 8000
 
 # Run the application.
-CMD fastapi run main.py --port 8000 --host 0.0.0.0
+CMD ["fastapi", "run", "main.py", "--port", "8000", "--host", "0.0.0.0"]
