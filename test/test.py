@@ -4,7 +4,6 @@ from double_0_00110111.helpers import write_to_image
 from double_0_00110111.constants import LOREM_MESSAGE
 from fastapi import HTTPException
 import re
-import boto3
 from os import getenv
 from dotenv import load_dotenv
 
@@ -58,11 +57,6 @@ class TestWriteToImage(unittest.TestCase):
     def setUp(self):
         load_dotenv()
 
-        boto3.setup_default_session(profile_name=getenv("AWS_PROFILE"))
-        self.s3_client = boto3.client(
-            "s3",
-            region_name=getenv("AWS_REGION")
-        )
         return super().setUp()
 
     def test_write_success(self):
@@ -84,10 +78,10 @@ class TestWriteToImage(unittest.TestCase):
 
         object_key = actual_val.get("url")
 
-        self.s3_client.head_object(
-            Bucket=getenv('AWS_S3_BUCKET'),
-            Key=object_key
-        )
+        file_path = f"images/encoded/{object_key}"
+        file = open(file_path, "rb")
+        file.read()
+        file.close()
 
     def test_write_invalid_format(self):
         expected_val = HTTPException(
