@@ -53,7 +53,7 @@ async def decode(file: UploadFile):
     image_response = read_from_image(image_data)
 
     return {
-        "Image Process": "Encode",
+        "Image Process": "Decode",
         "status": image_response.get("status"),
         "message": image_response.get("message"),
     }
