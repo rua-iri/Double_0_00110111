@@ -50,4 +50,4 @@ USER appuser
 EXPOSE 8000
 
 # Run the application.
-CMD fastapi dev double_0_00110111/main.py --port 8000 --host 0.0.0.0
+CMD fastapi dev main.py --port 8000 --host 0.0.0.0
