@@ -1,23 +1,13 @@
 import io
 from uuid import uuid4
 from PIL import Image
-import boto3
 
 from double_0_00110111 import helpers
 import logging
 from fastapi import HTTPException
 from .constants import XML_START, XML_END
 import random
-from os import getenv
-from dotenv import load_dotenv
 
-load_dotenv()
-
-boto3.setup_default_session(profile_name=getenv("AWS_PROFILE"))
-s3_client = boto3.client(
-    "s3",
-    region_name=getenv("AWS_REGION")
-)
 
 logger = logging.getLogger(__name__)
 
@@ -175,40 +165,33 @@ def encrypt_message(message: str) -> str:
     return message_encrypted
 
 
-def retrieve_img_s3(filename: str):
-    try:
-        s3_object = s3_client.get_object(
-            Bucket=getenv("AWS_S3_BUCKET"),
-            Key=filename
-        )
-
-        return s3_object.get("Body").read()
-
-    except Exception as e:
-        print(e)
-        return None
-
-
-def save_img_s3(filename: str, img_data: str):
-    """Save an image file to an S3 bucket
+def save_img_local(filename: str, img_data: str):
+    """Save an image file locally in the images/ directory
 
     Args:
         filename (str): The name that the object should be saved as
         img_data (str): The binary image data that should
         be written to the object
-
-    Raises:
-        e: Exception that may occur while uploading
     """
-    try:
-        s3_client.put_object(
-            Bucket=getenv("AWS_S3_BUCKET"),
-            Key=filename,
-            Body=img_data
-        )
+    file_location: str = f"images/encoded/{filename}"
 
-    except Exception as e:
-        raise e
+    with open(file_location, 'wb') as file:
+        file.write(img_data)
+
+
+def get_img_local(filename: str):
+    """Retrieve an encoded image from the local directory
+
+    Args:
+        filename (str): The name of the file to the retrieved
+
+    Returns:
+        _type_: The bytes of the image being retrieved
+    """
+    file_location: str = f"images/encoded/{filename}"
+
+    with open(file_location, "rb") as file:
+        return file.read()
 
 
 def read_from_image(image_data: bytes) -> dict:
@@ -333,7 +316,10 @@ def write_to_image(image_data: bytes, messageText: str) -> dict:
         img_bytes = buffer.getvalue()
         object_key = f"{uuid4().hex}.png"
 
-        save_img_s3(object_key, img_bytes)
+        save_img_local(
+            filename=object_key,
+            img_data=img_bytes
+        )
 
         return {
             "status": "success",

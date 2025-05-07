@@ -1,7 +1,7 @@
 import logging
 from double_0_00110111.constants import TEN_MB
 from double_0_00110111.helpers import (
-    read_from_image, retrieve_img_s3, write_to_image
+    get_img_local, read_from_image, write_to_image
 )
 
 from fastapi import FastAPI, Form, HTTPException, Response, UploadFile
@@ -70,7 +70,7 @@ def get_encoded_image(img_filename: str):
     using the filename passed via the URL
     """
 
-    img_data = retrieve_img_s3(img_filename)
+    img_data = get_img_local(img_filename)
 
     if not img_data:
         raise HTTPException(status_code=404, detail="Image not found")
