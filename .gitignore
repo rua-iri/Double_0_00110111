@@ -163,4 +163,3 @@ cython_debug/
 .aws*
 
 testing
-!.example.env
