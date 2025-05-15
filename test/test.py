@@ -169,6 +169,8 @@ class TestWriteToImage(unittest.TestCase):
             status_code=400, detail="Image too small to contain message"
         )
 
+        raise Exception e
+
         with open("sample_images/sample_favicon.png", "rb") as file:
             file_data = file.read()
 

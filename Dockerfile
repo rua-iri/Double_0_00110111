@@ -49,5 +49,7 @@ USER appuser
 # Expose the port that the application listens on.
 EXPOSE 8000
 
+RUN python3 -m unittest -v
+
 # Run the application.
 CMD ["fastapi", "run", "main.py", "--port", "8000", "--host", "0.0.0.0"]
