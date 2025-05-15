@@ -29,10 +29,19 @@ class TestReadFromImage(unittest.TestCase):
         with open("sample_images/sample.png", "rb") as file:
             file_data = file.read()
 
-        actual_val = read_from_image(file_data)
+        with self.assertRaises(HTTPException) as context:
+            read_from_image(file_data)
 
-        self.assertEqual(expected_val.status_code, actual_val.status_code)
-        self.assertEqual(expected_val.detail, actual_val.detail)
+        actual_exception = context.exception
+
+        self.assertEqual(
+            expected_val.status_code,
+            actual_exception.status_code
+        )
+        self.assertEqual(
+            expected_val.detail,
+            actual_exception.detail
+        )
 
     def test_read_invalid_format(self):
         expected_val = HTTPException(
@@ -41,10 +50,19 @@ class TestReadFromImage(unittest.TestCase):
         with open("sample_images/sample.jpg", "rb") as file:
             file_data = file.read()
 
-        actual_val = read_from_image(file_data)
+        with self.assertRaises(HTTPException) as context:
+            read_from_image(file_data)
 
-        self.assertEqual(expected_val.status_code, actual_val.status_code)
-        self.assertEqual(expected_val.detail, actual_val.detail)
+        actual_exception = context.exception
+        # self.assertRaises(HTTPException)
+        self.assertEqual(
+            expected_val.status_code,
+            actual_exception.status_code
+        )
+        self.assertEqual(
+            expected_val.detail,
+            actual_exception.detail
+        )
 
 
 class TestWriteToImage(unittest.TestCase):
@@ -86,10 +104,19 @@ class TestWriteToImage(unittest.TestCase):
         with open("sample_images/sample.jpg", "rb") as file:
             file_data = file.read()
 
-        actual_val: HTTPException = write_to_image(file_data, "Test Message")
+        with self.assertRaises(HTTPException) as context:
+            write_to_image(file_data, "Test Message")
 
-        self.assertEqual(actual_val.status_code, expected_val.status_code)
-        self.assertEqual(actual_val.detail, expected_val.detail)
+        actual_exception = context.exception
+
+        self.assertEqual(
+            actual_exception.status_code,
+            expected_val.status_code
+        )
+        self.assertEqual(
+            actual_exception.detail,
+            expected_val.detail
+        )
 
     def test_write_image_already_encoded(self):
         expected_val = HTTPException(
@@ -100,10 +127,19 @@ class TestWriteToImage(unittest.TestCase):
         with open("sample_images/sample_encoded.png", "rb") as file:
             file_data = file.read()
 
-        actual_val: HTTPException = write_to_image(file_data, "Test Message")
+        with self.assertRaises(HTTPException) as context:
+            write_to_image(file_data, "Test Message")
 
-        self.assertEqual(actual_val.status_code, expected_val.status_code)
-        self.assertEqual(actual_val.detail, expected_val.detail)
+        actual_exception = context.exception
+
+        self.assertEqual(
+            actual_exception.status_code,
+            expected_val.status_code
+        )
+        self.assertEqual(
+            actual_exception.detail,
+            expected_val.detail
+        )
 
     def test_write_message_already_encoded(self):
         expected_val = HTTPException(
@@ -114,11 +150,19 @@ class TestWriteToImage(unittest.TestCase):
         with open("sample_images/sample.png", "rb") as file:
             file_data = file.read()
 
-        actual_val: HTTPException = write_to_image(
-            file_data, "<msg>Test Message</msg>")
+        with self.assertRaises(HTTPException) as context:
+            write_to_image(file_data, "<msg>Test Message</msg>")
 
-        self.assertEqual(actual_val.status_code, expected_val.status_code)
-        self.assertEqual(actual_val.detail, expected_val.detail)
+        actual_exception = context.exception
+
+        self.assertEqual(
+            actual_exception.status_code,
+            expected_val.status_code
+        )
+        self.assertEqual(
+            actual_exception.detail,
+            expected_val.detail
+        )
 
     def test_write_message_too_long(self):
         expected_val = HTTPException(
@@ -128,10 +172,19 @@ class TestWriteToImage(unittest.TestCase):
         with open("sample_images/sample_favicon.png", "rb") as file:
             file_data = file.read()
 
-        actual_val: HTTPException = write_to_image(file_data, LOREM_MESSAGE)
+        with self.assertRaises(HTTPException) as context:
+            write_to_image(file_data, LOREM_MESSAGE)
 
-        self.assertEqual(actual_val.status_code, expected_val.status_code)
-        self.assertEqual(actual_val.detail, expected_val.detail)
+        actual_exception = context.exception
+
+        self.assertEqual(
+            actual_exception.status_code,
+            expected_val.status_code
+        )
+        self.assertEqual(
+            actual_exception.detail,
+            expected_val.detail
+        )
 
 
 if __name__ == "__main__":
