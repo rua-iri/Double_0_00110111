@@ -239,6 +239,9 @@ def read_from_image(image_data: bytes) -> dict:
 
         return {"status": "success", "message": msg_text}
 
+    except HTTPException as e:
+        raise e
+
     except Exception as e:
         logger.error(e)
         raise HTTPException(status_code=500, detail="Something went wrong")
@@ -325,6 +328,9 @@ def write_to_image(image_data: bytes, messageText: str) -> dict:
             "status": "success",
             "url": object_key
         }
+
+    except HTTPException as e:
+        raise e
 
     except Exception as e:
         logger.error(e)
