@@ -28,35 +28,41 @@ services:
   #     depends_on:
   #       db:
   #         condition: service_healthy
-  #   db:
-  #     image: postgres
-  #     restart: always
-  #     user: postgres
-  #     secrets:
-  #       - db-password
-  #     volumes:
-  #       - db-data:/var/lib/postgresql/data
-  #     environment:
-  #       - POSTGRES_DB=example
-  #       - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
-  #     expose:
-  #       - 5432
-  #     healthcheck:
-  #       test: [ "CMD", "pg_isready" ]
-  #       interval: 10s
-  #       timeout: 5s
-  #       retries: 5
-# volumes:
-#   db-data:
+  db:
+    image: postgres
+    container_name: double_0_00110111-DB
+    restart: always
+    user: postgres
+    # secrets:
+    #   - db-password
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - ./data/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+    environment:
+      - POSTGRES_DB=Double_0_00110111_DB
+      # - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=double_0_db
+    ports:
+      - 5432:5432
+    # expose:
+    #   - 5432
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+volumes:
+  db-data:
 # secrets:
 #   db-password:
 #     file: db/password.txt
 
-  # mq:
-  #   image: rabbitmq:latest
-  #   container_name: double_0_00110111-rabbitmq
-  #   ports:
-  #     - "8080:80"
-  #   environment:
-  #     RABBITMQ_DEFAULT_USER: rabbit
-  #     RABBITMQ_DEFAULT_PASS: mq
+# mq:
+#   image: rabbitmq:latest
+#   container_name: double_0_00110111-rabbitmq
+#   ports:
+#     - "8080:80"
+#   environment:
+#     RABBITMQ_DEFAULT_USER: rabbit
+#     RABBITMQ_DEFAULT_PASS: mq
