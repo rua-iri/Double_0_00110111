@@ -52,3 +52,11 @@ services:
 #   db-password:
 #     file: db/password.txt
 
+  # mq:
+  #   image: rabbitmq:latest
+  #   container_name: double_0_00110111-rabbitmq
+  #   ports:
+  #     - "8080:80"
+  #   environment:
+  #     RABBITMQ_DEFAULT_USER: rabbit
+  #     RABBITMQ_DEFAULT_PASS: mq
