@@ -38,6 +38,29 @@ docker exec <container_name> python3 -m test -v
 ```
 
 
+## Demonstration
+
+The application is designed to encode images in a manner that is imperceptable to the human eye.
+
+| Input Image                                                                               | Output Image |
+| ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| ![image](https://github.com/rua-iri/Double_0_00110111/blob/main/sample_images/sample.png) | ![image](https://raw.githubusercontent.com/rua-iri/Double_0_00110111/refs/heads/main/sample_images/sample_encoded.png)  |
+
+The image has been encoded by modifying the binary values of each single pixel in a small section of the image so that it can contain the message.
+
+| Difference                                                                                |
+| ----------------------------------------------------------------------------------------- |
+| ![image](https://github.com/user-attachments/assets/df57e53d-75cd-42a8-a22c-547868a46261) |
+
+As you can see there is a single red line at the top of the file where the message has been secretly embedded in the image.
+
+
+If you would like to demonstrate how this works then run the following to output the difference between the original and encoded images.
+
+```bash
+compare -compose src <input_image.png> <output_image.png> image_diff.png
+```
+
 
 
 
