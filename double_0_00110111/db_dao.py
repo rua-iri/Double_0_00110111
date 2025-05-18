@@ -27,3 +27,15 @@ class DB_DAO:
             insert_query,
             (image_filename, image_uuid, image_location)
         )
+
+    def update_image_processed_status(self, image_uuid):
+        update_query: str = (
+            "UPDATE images "
+            "SET is_processed=true"
+            "WHERE image_uuid=%s"
+        )
+
+        self.cur.execute(
+            update_query,
+            (image_uuid, )
+        )
