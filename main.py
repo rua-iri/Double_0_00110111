@@ -35,6 +35,8 @@ async def encode(
     image_data = await file.read()
     image_response = write_to_image(image_data=image_data, messageText=message)
 
+    # TODO save image to ./images/unencoded/ and store a record in the database
+
     return {
         "Image Process": "Encode",
         "status": image_response.get("status"),
