@@ -44,7 +44,7 @@ services:
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=double_0_db
     ports:
-      - 5432:5432
+      - 5435:5432
     # expose:
     #   - 5432
     healthcheck:
