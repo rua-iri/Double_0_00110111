@@ -28,6 +28,8 @@ curl localhost:8000/helloworld
 
 ## Test
 
+The tests will be run as part of the Docker compose process, however if you would like to run them again then use the following command.
+
 ```
 docker exec <container_name> python3 -m test -v
 ```
