@@ -20,16 +20,18 @@ def add(x, y):
 
 
 @app.task
-def process_image_encoding(image_uuid: str):
+def process_image_encoding(image_uuid: str, user_message: str):
     db_dao = DB_DAO()
     result = db_dao.select_record_by_uuid(image_uuid)
 
-    full_image_path: str = f""
-    image_data = get_img_local(full_image_path)
+    full_image_path: str = result.get("image_location")
+    full_image_path += result.get("image_filename")
+    image_data: bytes = get_img_local(full_image_path)
 
     write_to_image(
-        image_data=,
-        messageText=)
+        image_data=image_data,
+        messageText=user_message
+    )
 
     db_dao.update_image_processed_status(image_uuid)
     return result
