@@ -1,12 +1,14 @@
 
 import psycopg
+from psycopg.rows import dict_row
 
 
 class DB_DAO:
 
     def __init__(self):
         self.conn = psycopg.connect(
-            "postgresql://postgres:password@localhost:5435/double_0_db"
+            "postgresql://postgres:password@localhost:5435/double_0_db",
+            row_factory=dict_row
         )
         self.cur = self.conn.cursor()
 
