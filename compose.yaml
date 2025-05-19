@@ -42,7 +42,6 @@ services:
       - POSTGRES_DB=Double_0_00110111_DB
       # - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
       - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=double_0_db
     ports:
       - 5435:5432
     # expose:
