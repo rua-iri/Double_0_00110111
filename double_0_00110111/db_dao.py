@@ -5,10 +5,10 @@ import psycopg
 class DB_DAO:
 
     def __init__(self):
-        conn = psycopg.connect(
+        self.conn = psycopg.connect(
             "postgresql://postgres:password@localhost:5435/double_0_db"
         )
-        self.cur = conn.cursor()
+        self.cur = self.conn.cursor()
 
     def select_record_by_uuid(self, uuid: str):
         select_query: str = "SELECT * FROM images WHERE image_uuid=%s;"
@@ -31,11 +31,12 @@ class DB_DAO:
     def update_image_processed_status(self, image_uuid):
         update_query: str = (
             "UPDATE images "
-            "SET is_processed=true"
-            "WHERE image_uuid=%s"
+            "SET is_processed=true "
+            "WHERE image_uuid=%s;"
         )
 
         self.cur.execute(
             update_query,
             (image_uuid, )
         )
+        self.conn.commit()
