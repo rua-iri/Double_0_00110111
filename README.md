@@ -10,8 +10,6 @@ This is a Python API to carry out [Steganography](https://en.wikipedia.org/wiki/
   <br>
 </div>
 
-
-
 ## Setup
 
 ```bash
@@ -22,8 +20,7 @@ cd Double_0_00110111
 docker compose up --build
 ```
 
-
-### Sanity Check 
+### Sanity Check
 
 ```bash
 curl localhost:8000/helloworld
@@ -35,14 +32,13 @@ curl localhost:8000/helloworld
 docker exec <container_name> python3 -m test -v
 ```
 
-
 ## Demonstration
 
 The application is designed to encode images in a manner that is imperceptable to the human eye.
 
-| Input Image                                                                               | Output Image |
-| ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| ![image](https://raw.githubusercontent.com/rua-iri/Double_0_00110111/refs/heads/main/sample_images/sample.png) | ![image](https://raw.githubusercontent.com/rua-iri/Double_0_00110111/refs/heads/main/sample_images/sample_encoded.png)  |
+| Input Image                                                                                                    | Output Image                                                                                                           |
+| -------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| ![image](https://raw.githubusercontent.com/rua-iri/Double_0_00110111/refs/heads/main/sample_images/sample.png) | ![image](https://raw.githubusercontent.com/rua-iri/Double_0_00110111/refs/heads/main/sample_images/sample_encoded.png) |
 
 The image has been encoded by modifying the binary values of each single pixel in a small section of the image so that it can contain the message.
 
@@ -52,13 +48,8 @@ The image has been encoded by modifying the binary values of each single pixel i
 
 As you can see there is a single red line at the top of the file where the message has been secretly embedded in the image.
 
-
 If you would like to demonstrate how this works then run the following to output the difference between the original and encoded images.
 
 ```bash
 compare -compose src <input_image.png> <output_image.png> image_diff.png
 ```
-
-
-
-
