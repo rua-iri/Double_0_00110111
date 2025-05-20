@@ -45,6 +45,10 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 RUN mkdir -p /images/encoded /images/unencoded
 RUN chown -R appuser:appuser /images
 
+# TODO: remove this
+# for debugging network issues only
+RUN apt update && apt install netcat wget curl -y
+
 # Switch to the non-privileged user to run the application.
 USER appuser
 

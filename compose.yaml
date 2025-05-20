@@ -16,6 +16,8 @@ services:
       - 8000:8000
     volumes:
       - image-data:/images
+    environment:
+      - queue_conn_string=pyamqp://rabbit:mq@double_0_00110111-rabbitmq:5672//
     develop:
       watch:
         - path: .
@@ -65,7 +67,7 @@ services:
       RABBITMQ_DEFAULT_USER: rabbit
       RABBITMQ_DEFAULT_PASS: mq
     healthcheck:
-      test: ["rabbitmq-diagnostics", "-q", "ping"]
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
       interval: 10s
       timeout: 5s
 
@@ -75,6 +77,8 @@ services:
       context: .
     volumes:
       - image-data:/images
+    environment:
+      - queue_conn_string=pyamqp://rabbit:mq@double_0_00110111-rabbitmq:5672//
     develop:
       watch:
         - path: .

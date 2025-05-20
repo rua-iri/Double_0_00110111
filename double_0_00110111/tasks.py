@@ -2,13 +2,14 @@
 
 from celery import Celery
 import time
+import os
 
 from double_0_00110111.db_dao import DB_DAO
 from double_0_00110111.helpers import get_img_local, write_to_image
 
 app = Celery(
     "tasks",
-    broker="pyamqp://rabbit:mq@localhost:5673//"
+    broker=os.getenv("queue_conn_string")
 )
 
 
