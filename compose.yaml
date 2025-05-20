@@ -64,6 +64,10 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: rabbit
       RABBITMQ_DEFAULT_PASS: mq
+    healthcheck:
+      test: ["rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
 
   worker:
     container_name: double_0_00110111-worker
@@ -79,7 +83,7 @@ services:
       db:
         condition: service_healthy
       mq:
-        condition: service_started
+        condition: service_healthy
     command:
       ["celery", "-A", "double_0_00110111.tasks", "worker", "--loglevel=info"]
 
