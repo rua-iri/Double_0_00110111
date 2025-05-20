@@ -20,6 +20,11 @@ services:
       watch:
         - path: .
           action: rebuild
+    depends_on:
+      db:
+        condition: service_healthy
+      worker:
+        condition: service_started
 
   # The commented out section below is an example of how to define a PostgreSQL
   # database that your application can use. `depends_on` tells Docker Compose to
@@ -27,9 +32,6 @@ services:
   # database data between container restarts. The `db-password` secret is used
   # to set the database password. You must create `db/password.txt` and add
   # a password of your choosing to it before running `docker compose up`.
-  #     depends_on:
-  #       db:
-  #         condition: service_healthy
   db:
     image: postgres
     container_name: double_0_00110111-DB
@@ -62,6 +64,24 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: rabbit
       RABBITMQ_DEFAULT_PASS: mq
+
+  worker:
+    container_name: double_0_00110111-worker
+    build:
+      context: .
+    volumes:
+      - image-data:/images
+    develop:
+      watch:
+        - path: .
+          action: rebuild
+    depends_on:
+      db:
+        condition: service_healthy
+      mq:
+        condition: service_started
+    command:
+      ["celery", "-A", "double_0_00110111.tasks", "worker", "--loglevel=info"]
 
 volumes:
   db-data:
