@@ -31,6 +31,8 @@ class DB_DAO:
             (image_filename, image_uuid, image_location)
         )
 
+        self.conn.commit()
+
     def update_image_processed_status(self, image_uuid):
         update_query: str = (
             "UPDATE images "
