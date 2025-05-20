@@ -33,15 +33,16 @@ class DB_DAO:
 
         self.conn.commit()
 
-    def update_image_processed_status(self, image_uuid):
+    def update_image_processed_status(self, image_location, image_uuid):
         update_query: str = (
             "UPDATE images "
             "SET is_processed=true "
+            "AND image_location=%s "
             "WHERE image_uuid=%s;"
         )
 
         self.cur.execute(
             update_query,
-            (image_uuid, )
+            (image_location, image_uuid, )
         )
         self.conn.commit()

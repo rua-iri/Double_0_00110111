@@ -1,8 +1,11 @@
 import logging
+from uuid import uuid4
 from double_0_00110111.constants import TEN_MB
+from double_0_00110111.db_dao import DB_DAO
 from double_0_00110111.helpers import (
-    get_img_local, read_from_image, write_to_image
+    get_img_local, read_from_image, save_img_local
 )
+from double_0_00110111.tasks import process_image_encoding
 
 from fastapi import FastAPI, Form, HTTPException, Response, UploadFile
 from typing import Annotated
@@ -32,15 +35,35 @@ async def encode(
     if file.size > TEN_MB:
         raise HTTPException(status_code=403, detail="Image Size Too Large")
 
+    db_dao = DB_DAO()
+
     image_data = await file.read()
-    image_response = write_to_image(image_data=image_data, messageText=message)
 
     # TODO save image to ./images/unencoded/ and store a record in the database
+    file_location: str = save_img_local(
+        filename=file.filename,
+        subdir="unencoded",
+        img_data=image_data
+    )
+
+    file_uuid = str(uuid4())
+    file_uuid = uuid4().hex
+
+    db_dao.insert_record(
+        image_filename=file.filename,
+        image_uuid=file_uuid,
+        image_location=file_location
+    )
+
+    process_image_encoding.delay(
+        image_uuid=file_uuid,
+        user_message=message
+    )
 
     return {
         "Image Process": "Encode",
-        "status": image_response.get("status"),
-        "url": image_response.get("url"),
+        "status": "Processing",
+        "uuid": file_uuid,
     }
 
 
@@ -64,17 +87,17 @@ async def decode(file: UploadFile):
 
 
 @app.get(
-    "/image/{img_filename}",
+    "/image/{img_uuid}",
     responses={200: {"content": {"image/png": {}}}},
     response_class=Response
 )
-def get_encoded_image(img_filename: str):
+def get_encoded_image(img_uuid: str):
     """
     Retrieve the encoded image for the user from s3
     using the filename passed via the URL
     """
 
-    img_data = get_img_local(img_filename)
+    img_data = get_img_local(img_uuid, "encoded")
 
     if not img_data:
         raise HTTPException(status_code=404, detail="Image not found")

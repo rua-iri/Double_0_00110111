@@ -165,21 +165,23 @@ def encrypt_message(message: str) -> str:
     return message_encrypted
 
 
-def save_img_local(filename: str, img_data: str):
-    """Save an image file locally in the images/ directory
+def save_img_local(filename: str, subdir: str, img_data: str) -> str:
+    """Save an image file locally in the /images/ directory
 
     Args:
         filename (str): The name that the object should be saved as
         img_data (str): The binary image data that should
         be written to the object
     """
-    file_location: str = f"images/encoded/{filename}"
+    file_location: str = f"/images/{subdir}/{filename}"
 
     with open(file_location, 'wb') as file:
         file.write(img_data)
 
+    return file_location
 
-def get_img_local(filename: str):
+
+def get_img_local(filepath: str) -> bytes:
     """Retrieve an encoded image from the local directory
 
     Args:
@@ -188,9 +190,8 @@ def get_img_local(filename: str):
     Returns:
         _type_: The bytes of the image being retrieved
     """
-    file_location: str = f"images/encoded/{filename}"
 
-    with open(file_location, "rb") as file:
+    with open(filepath, "rb") as file:
         return file.read()
 
 
@@ -248,7 +249,7 @@ def read_from_image(image_data: bytes) -> dict:
 
 
 def write_to_image(image_data: bytes, messageText: str) -> dict:
-    """Write the secret message to the image and store it in s3
+    """Write the secret message to the image and store it
 
     Args:
         image_data (bytes): The bytes data of the image file
@@ -319,15 +320,13 @@ def write_to_image(image_data: bytes, messageText: str) -> dict:
         img_bytes = buffer.getvalue()
         object_key = f"{uuid4().hex}.png"
 
-        save_img_local(
+        img_filepath: str = save_img_local(
             filename=object_key,
+            subdir="encoded",
             img_data=img_bytes
         )
 
-        return {
-            "status": "success",
-            "url": object_key
-        }
+        return img_filepath
 
     except HTTPException as e:
         raise e
