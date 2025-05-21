@@ -3,7 +3,9 @@ from uuid import uuid4
 from double_0_00110111.constants import TEN_MB
 from double_0_00110111.db_dao import DB_DAO
 from double_0_00110111.helpers import (
-    generate_filename, get_img_local, read_message_from_image, sanitise_filename, save_img_local
+    generate_filename, get_img_local,
+    read_message_from_image, sanitise_filename,
+    save_img_local
 )
 from double_0_00110111.tasks import process_image_encoding
 
