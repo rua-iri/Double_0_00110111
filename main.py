@@ -3,7 +3,7 @@ from uuid import uuid4
 from double_0_00110111.constants import TEN_MB
 from double_0_00110111.db_dao import DB_DAO
 from double_0_00110111.helpers import (
-    get_img_local, read_from_image, save_img_local
+    generate_filename, get_img_local, read_message_from_image, sanitise_filename, save_img_local
 )
 from double_0_00110111.tasks import process_image_encoding
 
@@ -39,18 +39,21 @@ async def encode(
 
     image_data = await file.read()
 
-    # TODO save image to ./images/unencoded/ and store a record in the database
+    # TODO: validate and sanitise filename
+
+    file_uuid = uuid4().hex
+
+    filename_sanitised: str = sanitise_filename(file.filename)
+    filename_unique = generate_filename(filename_sanitised, file_uuid)
+
     file_location: str = save_img_local(
-        filename=file.filename,
+        filename=filename_unique,
         subdir="unencoded",
         img_data=image_data
     )
 
-    file_uuid = str(uuid4())
-    file_uuid = uuid4().hex
-
     db_dao.insert_record(
-        image_filename=file.filename,
+        image_filename=filename_unique,
         image_uuid=file_uuid,
         image_location=file_location
     )
@@ -77,7 +80,7 @@ async def decode(file: UploadFile):
 
     # TODO read from database and fetch image
 
-    image_response = read_from_image(image_data)
+    image_response = read_message_from_image(image_data)
 
     return {
         "Image Process": "Decode",
@@ -96,6 +99,9 @@ def get_encoded_image(img_uuid: str):
     Retrieve the encoded image for the user from s3
     using the filename passed via the URL
     """
+
+    db_dao = DB_DAO()
+    db_dao.select_record_by_uuid(img_uuid)
 
     img_data = get_img_local(img_uuid, "encoded")
 

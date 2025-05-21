@@ -1,5 +1,4 @@
 import io
-from uuid import uuid4
 from PIL import Image
 
 from double_0_00110111 import helpers
@@ -195,7 +194,7 @@ def get_img_local(filepath: str) -> bytes:
         return file.read()
 
 
-def read_from_image(image_data: bytes) -> dict:
+def read_message_from_image(image_data: bytes) -> dict:
     """Handle the image data passed from the API endpoint
     and extract the text encoded in it
 
@@ -248,7 +247,11 @@ def read_from_image(image_data: bytes) -> dict:
         raise HTTPException(status_code=500, detail="Something went wrong")
 
 
-def write_to_image(image_data: bytes, messageText: str) -> dict:
+def write_message_to_image(
+        image_data: bytes,
+        messageText: str,
+        image_filename: str
+) -> dict:
     """Write the secret message to the image and store it
 
     Args:
@@ -318,10 +321,9 @@ def write_to_image(image_data: bytes, messageText: str) -> dict:
         buffer = io.BytesIO()
         img.save(buffer, format="PNG")
         img_bytes = buffer.getvalue()
-        object_key = f"{uuid4().hex}.png"
 
         img_filepath: str = save_img_local(
-            filename=object_key,
+            filename=image_filename,
             subdir="encoded",
             img_data=img_bytes
         )
@@ -334,3 +336,41 @@ def write_to_image(image_data: bytes, messageText: str) -> dict:
     except Exception as e:
         logger.error(e)
         raise HTTPException(status_code=500, detail="Something went wrong")
+
+
+def sanitise_filename(original_filename: str) -> str:
+
+    forbidden_chars: list = [
+        "\\", "/", " ",
+        "\"", "'", ","
+    ]
+    sanitised_filename: str = original_filename
+
+    for forbidden_char in forbidden_chars:
+        sanitised_filename = sanitised_filename.replace(
+            forbidden_char,
+            "_"
+        )
+
+    return sanitised_filename
+
+
+def generate_filename(original_filename: str, uid: str) -> str:
+    """Generate a unique filename using the original
+       filename with an added uuid to prevent overwriting
+       other images
+
+    Args:
+        original_filename (str): The original name of the file
+
+    Returns:
+        str: The filename with a substituted uuid
+    """
+    if "." not in original_filename:
+        logger.error("Filename is Invalid")
+        logger.error(original_filename)
+        raise HTTPException(status_code=400, detail="Invalid file name")
+
+    original_filename_split = original_filename.rsplit(".", 1)
+
+    return f".{uid}.".join(original_filename_split)

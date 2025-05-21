@@ -1,5 +1,5 @@
 import unittest
-from double_0_00110111.helpers import read_from_image
+from double_0_00110111.helpers import read_message_from_image
 from fastapi import HTTPException
 
 
@@ -17,7 +17,7 @@ class TestReadFromImage(unittest.TestCase):
         with open("sample_images/sample_encoded.png", "rb") as file:
             file_data = file.read()
 
-        self.assertEqual(expected_val, read_from_image(file_data))
+        self.assertEqual(expected_val, read_message_from_image(file_data))
 
     def test_read_not_encoded(self):
         expected_val = HTTPException(
@@ -27,7 +27,7 @@ class TestReadFromImage(unittest.TestCase):
             file_data = file.read()
 
         with self.assertRaises(HTTPException) as context:
-            read_from_image(file_data)
+            read_message_from_image(file_data)
 
         actual_exception = context.exception
 
@@ -48,7 +48,7 @@ class TestReadFromImage(unittest.TestCase):
             file_data = file.read()
 
         with self.assertRaises(HTTPException) as context:
-            read_from_image(file_data)
+            read_message_from_image(file_data)
 
         actual_exception = context.exception
         # self.assertRaises(HTTPException)

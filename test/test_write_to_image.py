@@ -1,5 +1,5 @@
 from double_0_00110111.constants import LOREM_MESSAGE
-from double_0_00110111.helpers import write_to_image
+from double_0_00110111.helpers import write_message_to_image
 
 
 from fastapi import HTTPException
@@ -26,7 +26,7 @@ class TestWriteToImage(unittest.TestCase):
         with open("sample_images/sample.png", "rb") as file:
             file_data = file.read()
 
-        actual_val = write_to_image(file_data, "Test Message")
+        actual_val = write_message_to_image(file_data, "Test Message")
 
         regex_search_result = re.search(
             "^[a-zA-Z0-9]{32}.png$", actual_val["url"])
@@ -49,7 +49,7 @@ class TestWriteToImage(unittest.TestCase):
             file_data = file.read()
 
         with self.assertRaises(HTTPException) as context:
-            write_to_image(file_data, "Test Message")
+            write_message_to_image(file_data, "Test Message")
 
         actual_exception = context.exception
 
@@ -72,7 +72,7 @@ class TestWriteToImage(unittest.TestCase):
             file_data = file.read()
 
         with self.assertRaises(HTTPException) as context:
-            write_to_image(file_data, "Test Message")
+            write_message_to_image(file_data, "Test Message")
 
         actual_exception = context.exception
 
@@ -95,7 +95,7 @@ class TestWriteToImage(unittest.TestCase):
             file_data = file.read()
 
         with self.assertRaises(HTTPException) as context:
-            write_to_image(file_data, "<msg>Test Message</msg>")
+            write_message_to_image(file_data, "<msg>Test Message</msg>")
 
         actual_exception = context.exception
 
@@ -117,7 +117,7 @@ class TestWriteToImage(unittest.TestCase):
             file_data = file.read()
 
         with self.assertRaises(HTTPException) as context:
-            write_to_image(file_data, LOREM_MESSAGE)
+            write_message_to_image(file_data, LOREM_MESSAGE)
 
         actual_exception = context.exception
 
