@@ -80,8 +80,6 @@ async def decode(file: UploadFile):
 
     image_data: bytes = await file.read()
 
-    # TODO read from database and fetch image
-
     image_response = read_message_from_image(image_data)
 
     return {
