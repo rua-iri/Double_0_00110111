@@ -151,7 +151,7 @@ def decode_image(
     return totalText
 
 
-def is_valid_file_format(file_format: str):
+def is_valid_file_format(file_format: str | None):
 
     if file_format != "PNG":
         return False
@@ -164,7 +164,7 @@ def encrypt_message(message: str) -> str:
     return message_encrypted
 
 
-def save_img_local(filename: str, subdir: str, img_data: str) -> str:
+def save_img_local(filename: str, subdir: str, img_data: bytes) -> str:
     """Save an image file locally in the /images/ directory
 
     Args:
@@ -210,7 +210,7 @@ def read_message_from_image(image_data: bytes) -> dict:
         dict: The Response status and message contained within the message
     """
     try:
-        img: Image = Image.open(io.BytesIO(image_data))
+        img: Image.Image = Image.open(io.BytesIO(image_data))
         file_format = img.format
 
         if img.mode != "RGB":
@@ -251,7 +251,7 @@ def write_message_to_image(
         image_data: bytes,
         messageText: str,
         image_filename: str
-) -> dict:
+) -> str:
     """Write the secret message to the image and store it
 
     Args:
@@ -266,10 +266,10 @@ def write_message_to_image(
         HTTPException: A generic exception to handle other cases
 
     Returns:
-        dict: The status of the upload and the object's key in s3
+        str: The path to where the image has been stored
     """
     try:
-        img: Image = Image.open(io.BytesIO(image_data))
+        img: Image.Image = Image.open(io.BytesIO(image_data))
         file_format = img.format
 
         if img.mode != "RGB":
@@ -320,7 +320,7 @@ def write_message_to_image(
 
         buffer = io.BytesIO()
         img.save(buffer, format="PNG")
-        img_bytes = buffer.getvalue()
+        img_bytes: bytes = buffer.getvalue()
 
         img_filepath: str = save_img_local(
             filename=image_filename,
