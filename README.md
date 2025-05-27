@@ -40,7 +40,7 @@ The application is designed to encode images in a manner that is imperceptable t
 
 | Input Image                                                                                                    | Output Image                                                                                                           |
 | -------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| ![image](https://raw.githubusercontent.com/rua-iri/Double_0_00110111/refs/heads/main/sample_images/sample.png) | ![image](https://raw.githubusercontent.com/rua-iri/Double_0_00110111/refs/heads/main/sample_images/sample_encoded.png) |
+| ![image](https://raw.githubusercontent.com/rua-iri/Double_0_00110111/refs/heads/main/fastapi_backend/sample_images/sample.png) | ![image](https://raw.githubusercontent.com/rua-iri/Double_0_00110111/refs/heads/main/fastapi_backend/sample_images/sample_encoded.png) |
 
 The image has been encoded by modifying the binary values of each single pixel in a small section of the image so that it can contain the message.
 
