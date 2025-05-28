@@ -27,6 +27,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <div className="flex gap-2.5">
+          <a href="/encode">Encode</a>
+          <a href="/decode">Decode</a>
+        </div>
         {children}
       </body>
     </html>
