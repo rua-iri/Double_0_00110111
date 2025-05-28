@@ -97,18 +97,29 @@ async def decode(file: UploadFile):
     response_class=Response
 )
 def get_encoded_image(img_uuid: str):
-    """
-    Retrieve the encoded image for the user from s3
+    """Retrieve the encoded image for the user from storage
     using the filename passed via the URL
+
+    Args:
+        img_uuid (str): The uuid identifying the image
+        record in the database
+
+    Raises:
+        HTTPException: 404 image not found
+
+    Returns:
+        Response: A FastAPI response containing the image content
     """
 
     db_dao = DB_DAO()
-    db_dao.select_record_by_uuid(img_uuid)
+    image_record = db_dao.select_record_by_uuid(img_uuid)
 
-    img_data = get_img_local(img_uuid, "encoded")
-
-    if not img_data:
+    if not image_record:
         raise HTTPException(status_code=404, detail="Image not found")
+
+    filepath: str = f"/images/encoded/{image_record.get('image_filename')}"
+
+    img_data = get_img_local(filepath)
 
     return Response(
         content=img_data,

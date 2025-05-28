@@ -1,19 +1,25 @@
 
 import psycopg
-from psycopg.rows import dict_row
+from psycopg.rows import dict_row, TupleRow
 import os
 
 
 class DB_DAO:
 
     def __init__(self):
+
+        db_conn_string: str | None = os.getenv("db_conn_string")
+
+        if not db_conn_string:
+            raise Exception("Invalid database connection string")
+
         self.conn = psycopg.connect(
-            os.getenv("db_conn_string"),
+            db_conn_string,
             row_factory=dict_row
         )
         self.cur = self.conn.cursor()
 
-    def select_record_by_uuid(self, uuid: str):
+    def select_record_by_uuid(self, uuid: str) -> dict | None:
         select_query: str = "SELECT * FROM images WHERE image_uuid=%s;"
 
         return self.cur.execute(select_query, (uuid,)).fetchone()
