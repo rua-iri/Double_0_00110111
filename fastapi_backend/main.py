@@ -34,18 +34,20 @@ async def encode(
     file: UploadFile,
 ):
 
-    if file.size > TEN_MB:
+    if file.size and file.size > TEN_MB:
         raise HTTPException(status_code=403, detail="Image Size Too Large")
 
     db_dao = DB_DAO()
 
     image_data = await file.read()
 
-    # TODO: validate and sanitise filename
-
     file_uuid = uuid4().hex
 
-    filename_sanitised: str = sanitise_filename(file.filename)
+    if file.filename:
+        filename_sanitised: str = sanitise_filename(file.filename)
+    else:
+        filename_sanitised: str = "image.png"
+
     filename_unique = generate_filename(filename_sanitised, file_uuid)
 
     file_location: str = save_img_local(
@@ -75,7 +77,7 @@ async def encode(
 @app.post("/decode")
 async def decode(file: UploadFile):
 
-    if file.size > TEN_MB:
+    if file.size and file.size > TEN_MB:
         raise HTTPException(status_code=403, detail="Image Size Too Large")
 
     image_data: bytes = await file.read()
