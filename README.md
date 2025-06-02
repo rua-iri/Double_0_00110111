@@ -12,12 +12,24 @@ This is a Python API to carry out [Steganography](https://en.wikipedia.org/wiki/
 
 ## Setup
 
+To start the backend Docker containers run the following.
+
 ```bash
 git clone https://github.com/rua-iri/Double_0_00110111.git
 
 cd Double_0_00110111/fastapi_backend
 
-docker compose up --build
+docker compose up --build -d
+```
+
+Then start the frontend in development mode.
+
+```bash
+cd nextjs_frontend/
+
+npm install
+
+npm run dev 
 ```
 
 ### Sanity Check
