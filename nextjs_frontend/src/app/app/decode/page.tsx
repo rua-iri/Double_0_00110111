@@ -1,5 +1,6 @@
 "use client";
 import FileUpload from "@/app/components/FileUpload";
+import SubmitButton from "@/app/components/SubmitButton";
 
 export default function Home() {
   function handleFormSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -14,7 +15,7 @@ export default function Home() {
         Decode
         <form onSubmit={(event) => handleFormSubmit(event)}>
           <FileUpload />
-          <input type="submit" value="submit" />
+          <SubmitButton />
         </form>
       </main>
     </div>

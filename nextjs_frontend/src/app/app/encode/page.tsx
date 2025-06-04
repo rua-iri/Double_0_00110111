@@ -1,5 +1,6 @@
 "use client";
 import FileUpload from "@/app/components/FileUpload";
+import SubmitButton from "@/app/components/SubmitButton";
 import React from "react";
 
 export default function Home() {
@@ -15,7 +16,7 @@ export default function Home() {
         Encode
         <form onSubmit={(event) => handleFormSubmit(event)}>
           <FileUpload />
-          <input type="submit" value="submit" />
+          <SubmitButton />
         </form>
       </main>
     </div>
