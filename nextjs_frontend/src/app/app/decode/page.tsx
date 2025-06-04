@@ -7,6 +7,8 @@ export default function Home() {
     event.preventDefault();
 
     console.log(event.target);
+    const formdata = new FormData(event.currentTarget);
+    console.log(formdata);
   }
 
   return (
