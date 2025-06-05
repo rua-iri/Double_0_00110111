@@ -27,10 +27,14 @@ Then start the frontend in development mode.
 ```bash
 cd nextjs_frontend/
 
+cp .example.env .env
+
 npm install
 
 npm run dev 
 ```
+
+The .env file should then the populated with the URL of your backend server
 
 ### Sanity Check
 
