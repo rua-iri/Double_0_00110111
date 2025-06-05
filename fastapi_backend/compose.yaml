@@ -18,7 +18,7 @@ services:
       - image-data:/images
     environment:
       - queue_conn_string=pyamqp://rabbit:mq@double_0_00110111-rabbitmq:5672//
-      - db_conn_string=postgresql://postgres:password@double_0_00110111-DB:5432/double_0_db
+      - db_conn_string=postgresql://postgres:password@double_0_00110111-DB:5432/Double_0_00110111_DB
     develop:
       watch:
         - path: .
@@ -80,7 +80,7 @@ services:
       - image-data:/images
     environment:
       - queue_conn_string=pyamqp://rabbit:mq@double_0_00110111-rabbitmq:5672//
-      - db_conn_string=postgresql://postgres:password@double_0_00110111-DB:5432/double_0_db
+      - db_conn_string=postgresql://postgres:password@double_0_00110111-DB:5432/Double_0_00110111_DB
     develop:
       watch:
         - path: .

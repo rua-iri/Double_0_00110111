@@ -34,7 +34,7 @@ npm install
 npm run dev 
 ```
 
-The .env file should then the populated with the URL of your backend server
+The .env file should then the populated with the URL of your backend server.
 
 ### Sanity Check
 

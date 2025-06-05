@@ -9,7 +9,7 @@ export default function UploadFile() {
         <input
           className="max-h-0 max-w-0"
           type="file"
-          name="fileInput"
+          name="file"
           id="fileInput"
           onChange={(event: React.FormEvent<HTMLInputElement>) => {
             setFilename(event.currentTarget.value);
