@@ -29,9 +29,8 @@ export default function Home() {
 
   useEffect(() => {
     setTimeout(() => {
-        loadImage();
+      loadImage();
     }, 1000);
-
   }, [id]);
 
   return (
