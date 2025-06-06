@@ -29,7 +29,7 @@ class DB_DAO:
             "INSERT INTO images "
             "(image_filename, image_uuid) "
             "VALUES "
-            "(%s, %s, %s);"
+            "(%s, %s);"
         )
 
         self.cur.execute(
