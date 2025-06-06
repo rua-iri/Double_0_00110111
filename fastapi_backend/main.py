@@ -117,6 +117,9 @@ def get_encoded_image(img_uuid: str):
     if not image_record:
         raise HTTPException(status_code=404, detail="Image not found")
 
+    if not image_record.get("is_processed"):
+        return Response(status_code=202, detail="Image not yet ready")
+
     filepath: str = f"/images/encoded/{image_record.get('image_filename')}"
 
     img_data = get_img_local(filepath)
