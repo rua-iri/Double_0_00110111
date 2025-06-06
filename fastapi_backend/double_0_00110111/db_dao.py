@@ -42,8 +42,8 @@ class DB_DAO:
     def update_image_processed_status(self, image_location, image_uuid):
         update_query: str = (
             "UPDATE images "
-            "SET is_processed=true "
-            "AND image_location=%s "
+            "SET is_processed=true, "
+            "image_location=%s "
             "WHERE image_uuid=%s;"
         )
 
