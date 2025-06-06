@@ -23,9 +23,10 @@ export default function Home() {
       const data = await response.json();
       console.log(data);
 
-      const imgPageURL = `/app/image?id=${data.uuid}`;
+      const imgPageURL = `/app/image?id=${data.data.uuid}`;
       router.push(imgPageURL);
     } catch (error) {
+      // TODO: handle this
       console.log(error);
     }
   }

@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
     console.log("Decoding image");
     return NextResponse.json({
       status: 200,
-        imgData: imgBase64,
+      imgData: imgBase64,
     });
   } catch (error) {
     if (error instanceof NotFoundError) {

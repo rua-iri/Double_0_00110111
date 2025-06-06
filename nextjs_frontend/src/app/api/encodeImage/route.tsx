@@ -1,4 +1,4 @@
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
   const endpointURL: string = `${process.env.BASE_BACKEND_URL}/encode`;
@@ -18,11 +18,15 @@ export async function POST(request: NextRequest) {
     const data = await response.json();
     console.log(data);
 
-    return Response.json(data);
-
+    return NextResponse.json({
+      status: 200,
+      data: data,
+    });
   } catch (error) {
     console.log(error);
-    return Response.json({ message: "Hello World" });
-  } finally {
+    return NextResponse.json(
+      { error: "Something went wrong" },
+      { status: 500 }
+    );
   }
 }
