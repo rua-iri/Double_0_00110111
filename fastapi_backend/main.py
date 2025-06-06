@@ -1,3 +1,4 @@
+import json
 import logging
 from uuid import uuid4
 from double_0_00110111.constants import TEN_MB
@@ -119,7 +120,7 @@ def get_encoded_image(img_uuid: str):
     if not image_record.get("is_processed"):
         return Response(
             status_code=202,
-            content={"detail": "Image not yet ready"}
+            content=json.dumps({"detail": "Image not yet ready"})
         )
 
     filepath: str = f"/images/encoded/{image_record.get('image_filename')}"
