@@ -24,6 +24,7 @@ export default function Home() {
       setHasImageLoaded(true);
     } catch (error) {
       // TODO: handle error by displaying a message
+      console.error(error);
     }
   }
 
