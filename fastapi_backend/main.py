@@ -50,7 +50,7 @@ async def encode(
 
     filename_unique = generate_filename(filename_sanitised, file_uuid)
 
-    file_location: str = save_img_local(
+    save_img_local(
         filename=filename_unique,
         subdir="unencoded",
         img_data=image_data
@@ -59,7 +59,6 @@ async def encode(
     db_dao.insert_record(
         image_filename=filename_unique,
         image_uuid=file_uuid,
-        image_location=file_location
     )
 
     process_image_encoding.delay(

@@ -37,14 +37,13 @@ def process_image_encoding(image_uuid: str, user_message: str):
 
     image_data: bytes = get_img_local(full_image_path)
 
-    img_filepath = write_message_to_image(
+    write_message_to_image(
         image_data=image_data,
         messageText=user_message,
         image_filename=image_record.get("image_filename")
     )
 
     db_dao.update_image_processed_status(
-        image_location=img_filepath,
         image_uuid=image_uuid
     )
     return image_record

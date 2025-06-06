@@ -1,6 +1,6 @@
 
 import psycopg
-from psycopg.rows import dict_row, TupleRow
+from psycopg.rows import dict_row
 import os
 
 
@@ -24,31 +24,30 @@ class DB_DAO:
 
         return self.cur.execute(select_query, (uuid,)).fetchone()
 
-    def insert_record(self, image_filename, image_uuid, image_location):
+    def insert_record(self, image_filename, image_uuid):
         insert_query: str = (
             "INSERT INTO images "
-            "(image_filename, image_uuid, image_location) "
+            "(image_filename, image_uuid) "
             "VALUES "
             "(%s, %s, %s);"
         )
 
         self.cur.execute(
             insert_query,
-            (image_filename, image_uuid, image_location)
+            (image_filename, image_uuid)
         )
 
         self.conn.commit()
 
-    def update_image_processed_status(self, image_location, image_uuid):
+    def update_image_processed_status(self, image_uuid):
         update_query: str = (
             "UPDATE images "
-            "SET is_processed=true, "
-            "image_location=%s "
+            "SET is_processed=true "
             "WHERE image_uuid=%s;"
         )
 
         self.cur.execute(
             update_query,
-            (image_location, image_uuid, )
+            (image_uuid, )
         )
         self.conn.commit()
