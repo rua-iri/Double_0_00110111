@@ -37,7 +37,7 @@ export default function Home() {
       <h1 className="text-lg">Decode</h1>
       {isFormSubmitted ? (
         <div>
-          <p>The secret Message is: "{secretMessage}"</p>
+          <p>The secret Message is: &quot;{secretMessage}&quot;</p>
         </div>
       ) : (
         <div>

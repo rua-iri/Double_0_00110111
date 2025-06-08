@@ -11,24 +11,24 @@ export default function Home() {
   const searchParams = useSearchParams();
   const imageId = searchParams.get("id");
 
-  async function loadImage() {
-    try {
-      const response = await fetch(`/api/getImage?id=${imageId}`);
-      const data = await response.json();
-
-      console.log(data);
-      console.log(data.imgData);
-
-      setImageURL(`data:image/png;base64,${data.imgData}`);
-
-      setHasImageLoaded(true);
-    } catch (error) {
-      // TODO: handle error by displaying a message
-      console.error(error);
-    }
-  }
-
   useEffect(() => {
+    async function loadImage() {
+      try {
+        const response = await fetch(`/api/getImage?id=${imageId}`);
+        const data = await response.json();
+
+        console.log(data);
+        console.log(data.imgData);
+
+        setImageURL(`data:image/png;base64,${data.imgData}`);
+
+        setHasImageLoaded(true);
+      } catch (error) {
+        // TODO: handle error by displaying a message
+        console.error(error);
+      }
+    }
+
     loadImage();
   }, [imageId]);
 
