@@ -29,9 +29,7 @@ cd nextjs_frontend/
 
 cp .example.env .env
 
-npm install
-
-npm run dev 
+docker compose up --build -d
 ```
 
 The .env file should then the populated with the URL of your backend server.
