@@ -4,10 +4,12 @@ import SubmitButton from "@/app/components/SubmitButton";
 import { useState } from "react";
 
 export default function Home() {
+  const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const [secretMessage, setSecretMessage] = useState("");
 
   async function handleFormSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setIsFormSubmitted(true);
 
     console.log(event.target);
     const formdata = new FormData(event.currentTarget);
@@ -26,19 +28,25 @@ export default function Home() {
     } catch (error) {
       // TODO: handle this
       console.log(error);
+      setIsFormSubmitted(false);
     }
   }
 
   return (
     <>
-      Decode
-      <form onSubmit={(event) => handleFormSubmit(event)}>
-        <FileUpload />
-        <SubmitButton />
-      </form>
-      <div>
-        <p>The secret Message is: {secretMessage}</p>
-      </div>
+      <h1 className="text-lg">Decode</h1>
+      {isFormSubmitted ? (
+        <div>
+          <p>The secret Message is: "{secretMessage}"</p>
+        </div>
+      ) : (
+        <div>
+          <form onSubmit={(event) => handleFormSubmit(event)}>
+            <FileUpload />
+            <SubmitButton />
+          </form>
+        </div>
+      )}
     </>
   );
 }
