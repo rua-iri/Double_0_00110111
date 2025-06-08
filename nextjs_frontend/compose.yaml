@@ -13,5 +13,12 @@ services:
       context: .
     environment:
       NODE_ENV: production
+      BASE_BACKEND_URL: http://double_0_00110111-api-server:8000
     ports:
       - 3000:3000
+    networks:
+      - frontend-api-network
+
+networks:
+  frontend-api-network:
+    name: frontend-api-network
