@@ -3,13 +3,15 @@ import FileUpload from "@/app/components/FileUpload";
 import SubmitButton from "@/app/components/SubmitButton";
 import TextInput from "@/app/components/TextInput";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { useState } from "react";
 
 export default function Home() {
+  const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const router = useRouter();
 
   async function handleFormSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setIsFormSubmitted(true);
 
     console.log(event.target);
     const formdata = new FormData(event.currentTarget);
@@ -28,17 +30,22 @@ export default function Home() {
     } catch (error) {
       // TODO: handle this
       console.log(error);
+      setIsFormSubmitted(false);
     }
   }
 
   return (
     <>
       Encode
-      <form onSubmit={(event) => handleFormSubmit(event)}>
-        <FileUpload />
-        <TextInput />
-        <SubmitButton />
-      </form>
+      {isFormSubmitted ? (
+        <form onSubmit={(event) => handleFormSubmit(event)}>
+          <FileUpload />
+          <TextInput />
+          <SubmitButton />
+        </form>
+      ) : (
+        <div></div>
+      )}
     </>
   );
 }
