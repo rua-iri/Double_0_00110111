@@ -9,17 +9,17 @@ export default function Home() {
   const [imageURL, setImageURL] = useState("/file.svg");
 
   const searchParams = useSearchParams();
-  const id = searchParams.get("id");
+  const imageId = searchParams.get("id");
 
   async function loadImage() {
     try {
-      const response = await fetch(`/api/getImage?id=${id}`);
+      const response = await fetch(`/api/getImage?id=${imageId}`);
       const data = await response.json();
 
       console.log(data);
       console.log(data.imgData);
 
-      setImageURL(`data:image/gif;base64,${data.imgData}`);
+      setImageURL(`data:image/png;base64,${data.imgData}`);
 
       setHasImageLoaded(true);
     } catch (error) {
@@ -30,15 +30,36 @@ export default function Home() {
 
   useEffect(() => {
     loadImage();
-  }, [id]);
+  }, [imageId]);
 
   return (
     <>
-      Image
+      <h1 className="text-lg">Image</h1>
       {hasImageLoaded ? (
-        <Image width={500} height={500} src={imageURL} alt={"Encoded Image"} />
+        <>
+          <div className="p-3 border-1 rounded-md">
+            <Image
+              width={500}
+              height={500}
+              src={imageURL}
+              alt={"Encoded Image"}
+            />
+          </div>
+          <a
+            className="p-3 bg-amber-200 rounded-md hover:bg-amber-600 cursor-pointer"
+            href={imageURL}
+            download={`${imageId}_encoded.png`}
+          >
+            Download Image
+          </a>
+        </>
       ) : (
-        <div>Image Not Ready</div>
+        <div className="p-3 border-1 rounded-md">
+          <p>Image Not Ready Yet...</p>
+          <div className="flex justify-center my-2">
+            <span className="loader"></span>
+          </div>
+        </div>
       )}
     </>
   );
