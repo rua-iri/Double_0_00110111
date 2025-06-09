@@ -27,12 +27,10 @@ Then start the frontend in development mode.
 ```bash
 cd nextjs_frontend/
 
-cp .example.env .env
-
 docker compose up --build -d
 ```
 
-The .env file should then the populated with the URL of your backend server.
+If you would like to run the frontend locally on your machine then you will have to copy the `.example.env` file to `.env` to access the backend.
 
 ### Sanity Check
 
