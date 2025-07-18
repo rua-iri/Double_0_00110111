@@ -4,7 +4,7 @@ export default function UploadFile() {
   const [filename, setFilename] = useState("C:\\fakepath\\filename.png");
 
   return (
-    <div className="outline-1 outline-slate-900 rounded-md py-5 px-3 my-3">
+    <div className="outline-1 outline-slate-900 rounded-md py-5 px-3 m-3">
       <div>
         <input
           className="max-h-0 max-w-0"

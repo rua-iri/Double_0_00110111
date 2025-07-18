@@ -1,6 +1,6 @@
 export default function TextInput() {
   return (
-    <div className="outline-1 outline-slate-900 rounded-md py-5 px-3 my-3">
+    <div className="outline-1 outline-slate-900 rounded-md py-5 px-3 m-3">
       <label className="block" htmlFor="message">
         Enter your secret message
       </label>

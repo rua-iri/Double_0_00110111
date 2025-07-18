@@ -38,13 +38,15 @@ export default function Home() {
     <>
       Encode
       {isFormSubmitted ? (
-        <div></div>
+        <div className="debug my-42"></div>
       ) : (
-        <form onSubmit={(event) => handleFormSubmit(event)}>
-          <FileUpload />
-          <TextInput />
-          <SubmitButton />
-        </form>
+        <div className="my-14">
+          <form onSubmit={(event) => handleFormSubmit(event)}>
+            <FileUpload />
+            <TextInput />
+            <SubmitButton />
+          </form>
+        </div>
       )}
     </>
   );
