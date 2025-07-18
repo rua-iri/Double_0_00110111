@@ -1,5 +1,6 @@
 "use client";
 
+import LoadingIcon from "@/app/components/LoadingIcon";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -57,8 +58,9 @@ export default function Home() {
         <div className="p-3 m-3 border-1 rounded-md">
           <p>Image Not Ready Yet...</p>
           <div className="flex justify-center my-2">
-            <span className="loader"></span>
+            {/* <span className="loader"></span> */}
           </div>
+          <LoadingIcon />
         </div>
       )}
     </>
