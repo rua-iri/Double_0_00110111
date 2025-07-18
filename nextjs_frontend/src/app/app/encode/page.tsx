@@ -36,7 +36,7 @@ export default function Home() {
 
   return (
     <>
-      Encode
+      <h1 className="text-lg">Encode</h1>
       {isFormSubmitted ? (
         <div className="debug my-42"></div>
       ) : (

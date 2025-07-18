@@ -1,6 +1,5 @@
 import React, { Suspense } from "react";
-import PageFooter from "../components/PageFooter";
-import NavigationTab from "../components/NavigationTab";
+import TopSecretLabel from "../components/TopSecretLabel";
 
 export default function AppRootLayout({
   children,
@@ -8,6 +7,9 @@ export default function AppRootLayout({
   return (
     <main className="pb-12 relative">
       <Suspense>{children}</Suspense>
+      <div className="flex flex-col items-center my-20 py-5 gap-5 relative">
+        <TopSecretLabel labelMessage="CONFIDENTIAL" />
+      </div>
     </main>
   );
 }

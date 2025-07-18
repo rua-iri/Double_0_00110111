@@ -29,7 +29,7 @@ export default function Home() {
       }
     }
 
-    loadImage();
+    // loadImage();
   }, [imageId]);
 
   return (
@@ -37,7 +37,7 @@ export default function Home() {
       <h1 className="text-lg">Image</h1>
       {hasImageLoaded ? (
         <>
-          <div className="p-3 border-1 rounded-md">
+          <div className="p-3 m-3 border-1 rounded-md">
             <Image
               width={500}
               height={500}
@@ -54,7 +54,7 @@ export default function Home() {
           </a>
         </>
       ) : (
-        <div className="p-3 border-1 rounded-md">
+        <div className="p-3 m-3 border-1 rounded-md">
           <p>Image Not Ready Yet...</p>
           <div className="flex justify-center my-2">
             <span className="loader"></span>

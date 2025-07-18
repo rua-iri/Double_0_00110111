@@ -1,8 +1,6 @@
 import Image from "next/image";
 import HomePageLink from "./components/HomePageLink";
 import TopSecretLabel from "./components/TopSecretLabel";
-import PageFooter from "./components/PageFooter";
-import NavigationTab from "./components/NavigationTab";
 
 export default function Home() {
   return (
