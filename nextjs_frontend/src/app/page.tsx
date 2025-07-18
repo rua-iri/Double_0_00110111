@@ -10,21 +10,26 @@ export default function Home() {
       <div className="manilla-file col-span-6 shadow-lg/30 bg-white">
         <main className="pb-12 relative">
           <div className="grid grid-cols-2">
-            <div className="px-5">
+            <div className="px-5 relative">
               <Image
                 className="grayscale p-1 bg-white shadow-lg/30"
-                src={"/goldeneye_assets/testimg.jpg"}
+                src={"/spy_assets/spy_img_cropped.png"}
                 alt={"Secret Agent Photo"}
                 width={300}
                 height={600}
+              />
+              <Image
+                className="absolute -top-2.5"
+                src={"/spy_assets/paperclip.png"}
+                alt={"Paperclip"}
+                width={75}
+                height={75}
               />
             </div>
             <div className="flex flex-col items-end gap-5 px-15 py-5">
               <Image
                 className="grayscale mix-blend-multiply"
-                src={
-                  "/goldeneye_assets/Coat_of_arms_of_the_United_Kingdom_sm.png"
-                }
+                src={"/spy_assets/Coat_of_arms_of_the_United_Kingdom_sm.png"}
                 alt={"UK Coat of Arms"}
                 width={200}
                 height={100}

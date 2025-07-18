@@ -23,14 +23,14 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
-  background-image: url(/goldeneye_assets/background_fuzz.png);
+  background-image: url(/spy_assets/background_fuzz.png);
   background-size: cover;
   cursor: url(/goldeneye/assets/crosshair-50.png), auto;
 }
 
 
 .manilla-file {
-  background-image: url(/goldeneye_assets/manilla_background.jpg);
+  background-image: url(/spy_assets/manilla_background.jpg);
 }
 
 .noScrollbar::-webkit-scrollbar {
