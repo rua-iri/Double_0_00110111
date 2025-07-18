@@ -4,7 +4,7 @@ type TopSecretLabelProps = {
 
 export default function TopSecretLabel({ labelMessage }: TopSecretLabelProps) {
   return (
-    <div className="absolute m-auto left-0 -right-0 text-center -rotate-45 z-10">
+    <div className="absolute m-auto left-0 -right-0 text-center -rotate-45 z-10 select-none">
       <h1 className="text-5xl text-red-500 opacity-35">{labelMessage}</h1>
     </div>
   );

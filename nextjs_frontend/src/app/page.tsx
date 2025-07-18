@@ -12,14 +12,14 @@ export default function Home() {
           <div className="grid grid-cols-2">
             <div className="px-5 relative">
               <Image
-                className="grayscale p-1 bg-white shadow-lg/30"
+                className="grayscale p-1 bg-white shadow-lg/30 select-none"
                 src={"/spy_assets/spy_img_cropped.png"}
                 alt={"Secret Agent Photo"}
                 width={300}
                 height={600}
               />
               <Image
-                className="absolute -top-2.5"
+                className="absolute -top-2.5 select-none"
                 src={"/spy_assets/paperclip.png"}
                 alt={"Paperclip"}
                 width={75}
@@ -28,7 +28,7 @@ export default function Home() {
             </div>
             <div className="flex flex-col items-end gap-5 px-15 py-5">
               <Image
-                className="grayscale mix-blend-multiply"
+                className="grayscale mix-blend-multiply select-none"
                 src={"/spy_assets/Coat_of_arms_of_the_United_Kingdom_sm.png"}
                 alt={"UK Coat of Arms"}
                 width={200}
