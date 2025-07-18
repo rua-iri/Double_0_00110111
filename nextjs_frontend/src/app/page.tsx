@@ -29,7 +29,10 @@ export default function Home() {
                 width={200}
                 height={100}
               />
-              <h1 className="text-xl" title="Yes, it's seven in binary">
+              <h1
+                className="text-xl font-black"
+                title="Yes, it's seven in binary"
+              >
                 Double_0_00110111
               </h1>
             </div>
@@ -44,6 +47,7 @@ export default function Home() {
         <PageFooter />
       </div>
       <div className="my-3 flex flex-col gap-0.5">
+        <NavigationTab tabText="" tabLink="#" />
         <NavigationTab tabText="ENCODE" tabLink="/app/encode" />
         <NavigationTab tabText="DECODE" tabLink="/app/decode" />
       </div>
