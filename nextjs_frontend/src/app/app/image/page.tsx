@@ -30,7 +30,7 @@ export default function Home() {
       }
     }
 
-    // loadImage();
+    loadImage();
   }, [imageId]);
 
   return (
