@@ -5,7 +5,7 @@ export default function TextInput() {
         Enter your secret message
       </label>
       <input
-        className="block outline-1 outline-slate-900 rounded-md p-1"
+        className="block outline-1 outline-slate-900 rounded-md p-1 bg-slate-200"
         type="text"
         name="message"
         id="message"

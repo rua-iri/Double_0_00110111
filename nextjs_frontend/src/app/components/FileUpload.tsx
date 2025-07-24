@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 export default function UploadFile() {
-  const [filename, setFilename] = useState("C:\\fakepath\\filename.png");
+  const [filename, setFilename] = useState("");
 
   return (
     <div className="outline-1 outline-slate-900 rounded-md py-5 px-3 m-3">
@@ -13,7 +13,7 @@ export default function UploadFile() {
           id="fileInput"
           onChange={(event: React.FormEvent<HTMLInputElement>) => {
             setFilename(event.currentTarget.value);
-            console.log(event.currentTarget);
+            console.log(event.currentTarget.value);
           }}
           required
         />
@@ -27,8 +27,8 @@ export default function UploadFile() {
       </div>
       <div className="my-3">
         <code>
-          <pre className="bg-gray-300 w-44 overflow-scroll noScrollbar rounded-md">
-            {filename}
+          <pre className="bg-gray-300 w-44 overflow-scroll noScrollbar rounded-md w-full px-1">
+            { filename ? filename : "No File Selected"}
           </pre>
         </code>
       </div>

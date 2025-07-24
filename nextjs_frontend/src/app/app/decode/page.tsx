@@ -1,5 +1,6 @@
 "use client";
 import FileUpload from "@/app/components/FileUpload";
+import PageTitle from "@/app/components/PageTitle";
 import SubmitButton from "@/app/components/SubmitButton";
 import { useState } from "react";
 
@@ -34,7 +35,7 @@ export default function Home() {
 
   return (
     <>
-      <h1 className="text-lg">Decode</h1>
+      <PageTitle title="Decode Image" />
       {isFormSubmitted ? (
         <div>
           <p>The secret Message is: &quot;{secretMessage}&quot;</p>

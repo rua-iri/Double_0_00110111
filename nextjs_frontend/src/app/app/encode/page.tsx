@@ -1,5 +1,6 @@
 "use client";
 import FileUpload from "@/app/components/FileUpload";
+import PageTitle from "@/app/components/PageTitle";
 import SubmitButton from "@/app/components/SubmitButton";
 import TextInput from "@/app/components/TextInput";
 import { useRouter } from "next/navigation";
@@ -36,7 +37,7 @@ export default function Home() {
 
   return (
     <>
-      <h1 className="text-lg">Encode</h1>
+      <PageTitle title="Encode Image" />
       {isFormSubmitted ? (
         <div className="debug my-42"></div>
       ) : (

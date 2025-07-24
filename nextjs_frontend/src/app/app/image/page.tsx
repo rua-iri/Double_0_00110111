@@ -1,13 +1,14 @@
 "use client";
 
-import LoadingIcon from "@/app/components/LoadingIcon";
+// import LoadingIcon from "@/app/components/LoadingIcon";
+import PageTitle from "@/app/components/PageTitle";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function Home() {
-  const [hasImageLoaded, setHasImageLoaded] = useState(false);
-  const [imageURL, setImageURL] = useState("/file.svg");
+  const [hasImageLoaded, setHasImageLoaded] = useState(true);
+  const [imageURL, setImageURL] = useState("/spy_assets/spy_img_cropped.png");
 
   const searchParams = useSearchParams();
   const imageId = searchParams.get("id");
@@ -35,10 +36,10 @@ export default function Home() {
 
   return (
     <>
-      <h1 className="text-lg">Image</h1>
+      <PageTitle title="Image" />
       {hasImageLoaded ? (
-        <>
-          <div className="p-3 m-3 border-1 rounded-md">
+        <div className="flex flex-col">
+          <div className="p-3 m-3 border-1 rounded-md bg-white">
             <Image
               width={500}
               height={500}
@@ -47,13 +48,13 @@ export default function Home() {
             />
           </div>
           <a
-            className="p-3 bg-amber-200 rounded-md hover:bg-amber-600"
+            className="my-1 mx-3 p-3 text-center bg-slate-200 rounded-md hover:bg-slate-300"
             href={imageURL}
             download={`${imageId}_encoded.png`}
           >
             Download Image
           </a>
-        </>
+        </div>
       ) : (
         <div className="p-3 m-3 border-1 rounded-md">
           <p>Image Not Ready Yet...</p>
