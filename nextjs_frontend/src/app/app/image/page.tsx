@@ -47,7 +47,7 @@ export default function Home() {
             />
           </div>
           <a
-            className="p-3 bg-amber-200 rounded-md hover:bg-amber-600 cursor-pointer"
+            className="p-3 bg-amber-200 rounded-md hover:bg-amber-600"
             href={imageURL}
             download={`${imageId}_encoded.png`}
           >

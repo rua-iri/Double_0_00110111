@@ -18,7 +18,7 @@ export default function UploadFile() {
           required
         />
         <label
-          className="bg-slate-900 hover:bg-slate-700 text-white p-2 rounded-md cursor-pointer"
+          className="bg-slate-900 hover:bg-slate-700 text-white p-2 rounded-md"
           htmlFor="fileInput"
           tabIndex={0}
         >
